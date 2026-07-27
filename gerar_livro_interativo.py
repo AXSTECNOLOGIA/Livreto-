@@ -1,964 +1,1478 @@
 #!/usr/bin/env python3
-"""Gerador: Livro Interativo — Estudo do Evangelho de João
+"""
+Gerador: Livro Interativo — Estudo do Evangelho de João
 Uso: python3 gerar_livro_interativo.py
 Saída: estudo_joao_cap1_livro.html
 """
-
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from cap1_dados import CAP1, NAVY, GOLD, CREAM, GREEN, PURPLE, ORANGE, GRAY
 
-OUTPUT = "estudo_joao_cap1_livro.html"
+# ─── SVG ILLUSTRATIONS ────────────────────────────────────────────────────────
 
-def esc(s):
-    return str(s).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace('"','&quot;')
-
-# ─────────────────────────────── SVG ILUSTRAÇÕES ────────────────────────────
+def svg_cover():
+    return '''<svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2a4a8a"/>
+      <stop offset="100%" stop-color="#0a1525"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="35%" r="30%">
+      <stop offset="0%" stop-color="#e8c97a" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#e8c97a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="280" fill="url(#sky)"/>
+  <rect width="400" height="280" fill="url(#glow)"/>
+  <!-- Stars -->
+  <circle cx="40" cy="30" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="80" cy="15" r="1" fill="white" opacity="0.6"/>
+  <circle cx="320" cy="25" r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="360" cy="45" r="1" fill="white" opacity="0.7"/>
+  <circle cx="150" cy="20" r="1" fill="white" opacity="0.8"/>
+  <circle cx="280" cy="10" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="20" cy="80" r="1" fill="white" opacity="0.7"/>
+  <circle cx="380" cy="100" r="1.2" fill="white" opacity="0.8"/>
+  <!-- Central light beam -->
+  <polygon points="200,50 170,280 230,280" fill="#e8c97a" opacity="0.15"/>
+  <polygon points="200,60 185,280 215,280" fill="#e8c97a" opacity="0.2"/>
+  <!-- Cross silhouette -->
+  <rect x="193" y="80" width="14" height="80" fill="#e8c97a" opacity="0.7"/>
+  <rect x="170" y="110" width="60" height="12" fill="#e8c97a" opacity="0.7"/>
+  <!-- Star of Bethlehem -->
+  <circle cx="200" cy="70" r="8" fill="#e8c97a" opacity="0.9"/>
+  <circle cx="200" cy="70" r="4" fill="white"/>
+  <!-- Ground/horizon -->
+  <path d="M0,220 Q100,200 200,210 Q300,220 400,205 L400,280 L0,280 Z" fill="#1a2744" opacity="0.8"/>
+  <!-- City silhouette -->
+  <rect x="60" y="200" width="15" height="25" fill="#1a2744" opacity="0.9"/>
+  <rect x="80" y="195" width="12" height="30" fill="#1a2744" opacity="0.9"/>
+  <rect x="130" y="205" width="20" height="20" fill="#1a2744" opacity="0.9"/>
+  <rect x="250" y="198" width="18" height="27" fill="#1a2744" opacity="0.9"/>
+  <rect x="275" y="193" width="10" height="32" fill="#1a2744" opacity="0.9"/>
+  <rect x="310" y="202" width="25" height="23" fill="#1a2744" opacity="0.9"/>
+  <!-- Dome -->
+  <ellipse cx="145" cy="205" rx="15" ry="8" fill="#c9a84c" opacity="0.6"/>
+</svg>'''
 
 def svg_cosmos():
-    return '''<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;top:0;left:0">
+    return '''<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="cg1" cx="50%" cy="45%" r="60%">
-      <stop offset="0%" stop-color="#f5d06a" stop-opacity="0.9"/>
-      <stop offset="30%" stop-color="#c9a84c" stop-opacity="0.5"/>
-      <stop offset="70%" stop-color="#1a2744" stop-opacity="0.8"/>
-      <stop offset="100%" stop-color="#0d1a33" stop-opacity="1"/>
+    <radialGradient id="c1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#e8c97a"/>
+      <stop offset="100%" stop-color="#1a2744"/>
     </radialGradient>
   </defs>
-  <rect width="400" height="300" fill="url(#cg1)"/>
-  <circle cx="200" cy="130" r="8" fill="#fff" opacity="0.95"/>
-  <circle cx="200" cy="130" r="20" fill="none" stroke="#f5d06a" stroke-width="1" opacity="0.6"/>
-  <circle cx="200" cy="130" r="40" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.4"/>
-  <circle cx="200" cy="130" r="70" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.25"/>
-  <circle cx="200" cy="130" r="110" fill="none" stroke="#c9a84c" stroke-width="0.3" opacity="0.15"/>
-  <circle cx="60" cy="40" r="2" fill="#fff" opacity="0.8"/>
-  <circle cx="340" cy="60" r="1.5" fill="#fff" opacity="0.7"/>
-  <circle cx="90" cy="200" r="1" fill="#fff" opacity="0.6"/>
-  <circle cx="310" cy="220" r="2" fill="#fff" opacity="0.5"/>
-  <circle cx="150" cy="260" r="1" fill="#fff" opacity="0.6"/>
-  <circle cx="270" cy="270" r="1.5" fill="#fff" opacity="0.4"/>
-  <circle cx="30" cy="140" r="1" fill="#fff" opacity="0.5"/>
-  <circle cx="370" cy="180" r="1" fill="#fff" opacity="0.6"/>
+  <rect width="300" height="200" fill="#0a1525"/>
+  <circle cx="150" cy="100" r="90" fill="none" stroke="#1a2744" stroke-width="30" opacity="0.5"/>
+  <circle cx="150" cy="100" r="60" fill="none" stroke="#2a3a5a" stroke-width="20" opacity="0.6"/>
+  <circle cx="150" cy="100" r="30" fill="none" stroke="#3a5a8a" stroke-width="15" opacity="0.7"/>
+  <circle cx="150" cy="100" r="12" fill="url(#c1)"/>
+  <!-- Stars -->
+  <circle cx="30" cy="20" r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="270" cy="30" r="1" fill="white" opacity="0.8"/>
+  <circle cx="50" cy="160" r="1.2" fill="white" opacity="0.7"/>
+  <circle cx="260" cy="170" r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="80" cy="50" r="1" fill="white" opacity="0.6"/>
+  <circle cx="220" cy="55" r="1.2" fill="white" opacity="0.8"/>
+  <!-- Light rays -->
+  <line x1="150" y1="100" x2="150" y2="5" stroke="#e8c97a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="150" y1="100" x2="245" y2="55" stroke="#e8c97a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="150" y1="100" x2="55" y2="55" stroke="#e8c97a" stroke-width="0.5" opacity="0.4"/>
 </svg>'''
 
-def svg_luz():
-    return '''<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+def svg_light_dark():
+    return '''<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="lg1" cx="20%" cy="50%" r="80%">
-      <stop offset="0%" stop-color="#fde68a"/>
-      <stop offset="40%" stop-color="#c9a84c" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="#1a2744" stop-opacity="0.9"/>
+    <linearGradient id="ld" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0a1525"/>
+      <stop offset="50%" stop-color="#e8c97a"/>
+      <stop offset="100%" stop-color="#f5f0e8"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="70%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#e8c97a"/>
+      <stop offset="100%" stop-color="#e8c97a" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="400" height="260" fill="#1a2744"/>
-  <ellipse cx="80" cy="130" rx="60" ry="60" fill="url(#lg1)" opacity="0.9"/>
-  <line x1="80" y1="130" x2="400" y2="50" stroke="#fde68a" stroke-width="1.5" opacity="0.3"/>
-  <line x1="80" y1="130" x2="400" y2="100" stroke="#fde68a" stroke-width="2" opacity="0.4"/>
-  <line x1="80" y1="130" x2="400" y2="130" stroke="#fde68a" stroke-width="2.5" opacity="0.5"/>
-  <line x1="80" y1="130" x2="400" y2="160" stroke="#fde68a" stroke-width="2" opacity="0.4"/>
-  <line x1="80" y1="130" x2="400" y2="210" stroke="#fde68a" stroke-width="1.5" opacity="0.3"/>
-  <rect x="200" y="0" width="200" height="260" fill="#0d1a33" opacity="0.4"/>
+  <rect width="300" height="200" fill="url(#ld)"/>
+  <rect width="300" height="200" fill="url(#sun)"/>
+  <circle cx="210" cy="100" r="25" fill="white" opacity="0.9"/>
+  <circle cx="210" cy="100" r="18" fill="#fff8e7"/>
+  <!-- Dark side elements -->
+  <circle cx="40" cy="40" r="2" fill="white" opacity="0.7"/>
+  <circle cx="70" cy="80" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="20" cy="130" r="2" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="160" r="1" fill="white" opacity="0.7"/>
+  <!-- Light rays -->
+  <line x1="210" y1="100" x2="240" y2="70" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="210" y1="100" x2="250" y2="100" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="210" y1="100" x2="240" y2="130" stroke="white" stroke-width="1" opacity="0.4"/>
 </svg>'''
 
-def svg_cordeiro():
-    return '''<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+def svg_incarnation():
+    return '''<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <radialGradient id="inc" cx="50%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#e8c97a" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#1a2744" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="200" fill="#1a2744"/>
+  <rect width="300" height="200" fill="url(#inc)"/>
+  <!-- Dove -->
+  <path d="M150,60 C140,50 120,55 115,65 C110,75 120,80 130,78 L150,90 L170,78 C180,80 190,75 185,65 C180,55 160,50 150,60 Z" fill="white" opacity="0.9"/>
+  <circle cx="135" cy="68" r="3" fill="#1a2744"/>
+  <!-- Wings -->
+  <path d="M130,72 C110,60 95,65 90,75 C105,72 120,75 130,78 Z" fill="white" opacity="0.8"/>
+  <path d="M170,72 C190,60 205,65 210,75 C195,72 180,75 170,78 Z" fill="white" opacity="0.8"/>
+  <!-- Light beam descending -->
+  <polygon points="150,10 140,100 160,100" fill="#e8c97a" opacity="0.3"/>
+  <!-- Ground level - people silhouettes -->
+  <ellipse cx="100" cy="185" rx="12" ry="4" fill="#0a1525" opacity="0.6"/>
+  <rect x="97" y="160" width="6" height="25" rx="3" fill="#2a3a6a" opacity="0.7"/>
+  <circle cx="100" cy="155" r="7" fill="#2a3a6a" opacity="0.7"/>
+  <ellipse cx="200" cy="185" rx="12" ry="4" fill="#0a1525" opacity="0.6"/>
+  <rect x="197" y="160" width="6" height="25" rx="3" fill="#2a3a6a" opacity="0.7"/>
+  <circle cx="200" cy="155" r="7" fill="#2a3a6a" opacity="0.7"/>
+  <ellipse cx="150" cy="190" rx="15" ry="5" fill="#0a1525" opacity="0.6"/>
+  <rect x="147" y="155" width="6" height="35" rx="3" fill="#c9a84c" opacity="0.8"/>
+  <circle cx="150" cy="148" r="9" fill="#c9a84c" opacity="0.8"/>
+</svg>'''
+
+def svg_lamb():
+    return '''<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="meadow" x1="0%" y1="70%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#166534"/>
+    </linearGradient>
+    <radialGradient id="sky2" cx="50%" cy="0%" r="80%">
       <stop offset="0%" stop-color="#bfdbfe"/>
       <stop offset="100%" stop-color="#dbeafe"/>
-    </linearGradient>
-  </defs>
-  <rect width="360" height="220" fill="url(#sky)"/>
-  <ellipse cx="180" cy="200" rx="180" ry="30" fill="#86efac" opacity="0.6"/>
-  <ellipse cx="180" cy="145" rx="55" ry="40" fill="white" opacity="0.95"/>
-  <ellipse cx="155" cy="135" rx="28" ry="22" fill="white" opacity="0.9"/>
-  <ellipse cx="205" cy="133" rx="25" ry="20" fill="white" opacity="0.9"/>
-  <ellipse cx="180" cy="128" rx="35" ry="25" fill="white" opacity="0.95"/>
-  <ellipse cx="180" cy="140" rx="45" ry="30" fill="white" opacity="0.9"/>
-  <circle cx="168" cy="133" r="15" fill="white"/>
-  <circle cx="162" cy="130" r="4" fill="#1a2744" opacity="0.8"/>
-  <circle cx="163" cy="129" r="1.5" fill="white"/>
-  <ellipse cx="162" cy="150" rx="6" ry="10" fill="white"/>
-  <line x1="154" y1="165" x2="150" y2="185" stroke="#d4d4d4" stroke-width="3" stroke-linecap="round"/>
-  <line x1="170" y1="168" x2="168" y2="190" stroke="#d4d4d4" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="240" cy="60" r="25" fill="#fde68a" opacity="0.6"/>
-  <circle cx="240" cy="60" r="35" fill="none" stroke="#fde68a" stroke-width="8" opacity="0.2"/>
-</svg>'''
-
-def svg_discipulos():
-    return '''<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
-  <defs>
-    <linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fed7aa"/>
-      <stop offset="60%" stop-color="#f97316" stop-opacity="0.5"/>
-      <stop offset="100%" stop-color="#1a2744"/>
-    </linearGradient>
-  </defs>
-  <rect width="360" height="220" fill="url(#sunset)"/>
-  <ellipse cx="180" cy="185" rx="180" ry="15" fill="#1a2744" opacity="0.9"/>
-  <circle cx="200" cy="90" r="30" fill="#fde68a" opacity="0.7"/>
-  <line x1="0" y1="185" x2="360" y2="185" stroke="#1a2744" stroke-width="2"/>
-  <g transform="translate(50,120)">
-    <circle cx="0" cy="-30" r="12" fill="#c9a84c" opacity="0.8"/>
-    <rect x="-8" y="-18" width="16" height="40" rx="4" fill="#e07b39" opacity="0.8"/>
-  </g>
-  <g transform="translate(90,115)">
-    <circle cx="0" cy="-30" r="12" fill="#c9a84c" opacity="0.8"/>
-    <rect x="-8" y="-18" width="16" height="45" rx="4" fill="#1a2744" opacity="0.8"/>
-  </g>
-  <g transform="translate(130,118)">
-    <circle cx="0" cy="-30" r="12" fill="#c9a84c" opacity="0.8"/>
-    <rect x="-8" y="-18" width="16" height="42" rx="4" fill="#2d6a4f" opacity="0.8"/>
-  </g>
-  <path d="M20,185 Q80,140 140,160 Q200,180 280,130 Q320,110 360,120" stroke="#60a5fa" stroke-width="3" fill="none" opacity="0.5"/>
-</svg>'''
-
-def svg_capa_bg():
-    return '''<svg viewBox="0 0 500 680" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%">
-  <defs>
-    <radialGradient id="cbg" cx="50%" cy="35%" r="70%">
-      <stop offset="0%" stop-color="#2a3f6e"/>
-      <stop offset="100%" stop-color="#0d1728"/>
     </radialGradient>
   </defs>
-  <rect width="500" height="680" fill="url(#cbg)"/>
-  <circle cx="250" cy="210" r="6" fill="#f5d06a" opacity="0.95"/>
-  <circle cx="250" cy="210" r="25" fill="none" stroke="#c9a84c" stroke-width="1.5" opacity="0.5"/>
-  <circle cx="250" cy="210" r="55" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.3"/>
-  <circle cx="250" cy="210" r="95" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.15"/>
-  <line x1="250" y1="210" x2="80" y2="50" stroke="#c9a84c" stroke-width="0.8" opacity="0.2"/>
-  <line x1="250" y1="210" x2="420" y2="70" stroke="#c9a84c" stroke-width="0.8" opacity="0.2"/>
-  <line x1="250" y1="210" x2="50" y2="280" stroke="#c9a84c" stroke-width="0.8" opacity="0.15"/>
-  <line x1="250" y1="210" x2="450" y2="300" stroke="#c9a84c" stroke-width="0.8" opacity="0.15"/>
-  <circle cx="80" cy="50" r="1.5" fill="#fff" opacity="0.7"/>
-  <circle cx="420" cy="70" r="1" fill="#fff" opacity="0.6"/>
-  <circle cx="50" cy="160" r="1.5" fill="#fff" opacity="0.5"/>
-  <circle cx="460" cy="200" r="1" fill="#fff" opacity="0.6"/>
-  <circle cx="100" cy="350" r="1" fill="#fff" opacity="0.4"/>
-  <circle cx="390" cy="400" r="1.5" fill="#fff" opacity="0.5"/>
-  <circle cx="30" cy="500" r="1" fill="#fff" opacity="0.4"/>
-  <circle cx="470" cy="550" r="1" fill="#fff" opacity="0.5"/>
-  <rect x="0" y="560" width="500" height="120" fill="#0d1728" opacity="0.7"/>
-  <line x1="30" y1="565" x2="470" y2="565" stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+  <rect width="300" height="200" fill="url(#sky2)"/>
+  <rect x="0" y="130" width="300" height="70" fill="url(#meadow)"/>
+  <!-- Sun -->
+  <circle cx="240" cy="40" r="22" fill="#fef08a" opacity="0.9"/>
+  <!-- Clouds -->
+  <ellipse cx="80" cy="50" rx="40" ry="18" fill="white" opacity="0.8"/>
+  <ellipse cx="100" cy="44" rx="28" ry="16" fill="white" opacity="0.9"/>
+  <!-- Lamb body -->
+  <ellipse cx="150" cy="145" rx="35" ry="22" fill="white"/>
+  <ellipse cx="148" cy="138" rx="28" ry="20" fill="white"/>
+  <!-- Lamb head -->
+  <circle cx="178" cy="135" r="16" fill="white"/>
+  <ellipse cx="188" cy="143" rx="8" ry="6" fill="#f3e8d8"/>
+  <!-- Ears -->
+  <ellipse cx="174" cy="122" rx="5" ry="8" fill="#f3e8d8"/>
+  <ellipse cx="185" cy="121" rx="5" ry="8" fill="#f3e8d8"/>
+  <!-- Eyes -->
+  <circle cx="183" cy="134" r="3" fill="#1a2744"/>
+  <circle cx="184" cy="133" r="1" fill="white"/>
+  <!-- Legs -->
+  <rect x="123" y="162" width="7" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="138" y="162" width="7" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="155" y="162" width="7" height="20" rx="3" fill="#e5e7eb"/>
+  <rect x="170" y="162" width="7" height="20" rx="3" fill="#e5e7eb"/>
+  <!-- Grass blades -->
+  <path d="M20,130 Q25,115 22,130" stroke="#16a34a" stroke-width="1.5" fill="none"/>
+  <path d="M50,128 Q55,113 52,128" stroke="#16a34a" stroke-width="1.5" fill="none"/>
+  <path d="M260,132 Q265,117 262,132" stroke="#16a34a" stroke-width="1.5" fill="none"/>
+</svg>'''
+
+def svg_disciples():
+    return '''<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lake" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+    <linearGradient id="sunset" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="60%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#9a3412"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="200" fill="url(#sunset)"/>
+  <!-- Lake -->
+  <ellipse cx="150" cy="175" rx="150" ry="35" fill="url(#lake)" opacity="0.8"/>
+  <!-- Sun reflection -->
+  <ellipse cx="150" cy="180" rx="20" ry="8" fill="#fef08a" opacity="0.5"/>
+  <!-- Boat -->
+  <path d="M80,155 Q150,145 220,155 L210,175 Q150,168 90,175 Z" fill="#92400e"/>
+  <!-- Mast -->
+  <rect x="148" y="120" width="4" height="38" fill="#78350f"/>
+  <polygon points="152,120 185,135 152,150" fill="#f5f0e8" opacity="0.8"/>
+  <!-- Net -->
+  <path d="M90,160 Q100,170 110,160 Q120,170 130,160" stroke="#c9a84c" stroke-width="1" fill="none" opacity="0.7"/>
+  <!-- Figures in boat -->
+  <circle cx="100" cy="152" r="7" fill="#92400e"/>
+  <rect x="97" y="155" width="6" height="10" fill="#78350f"/>
+  <circle cx="150" cy="148" r="8" fill="#c9a84c"/>
+  <rect x="147" y="152" width="6" height="10" fill="#a37c30"/>
+  <circle cx="200" cy="152" r="7" fill="#92400e"/>
+  <rect x="197" y="155" width="6" height="10" fill="#78350f"/>
+  <!-- Mountains -->
+  <polygon points="0,120 60,70 120,120" fill="#7c2d12" opacity="0.5"/>
+  <polygon points="180,120 250,60 300,120" fill="#7c2d12" opacity="0.5"/>
 </svg>'''
 
 def svg_map():
-    return '''<svg viewBox="0 0 240 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;border-radius:8px;overflow:hidden">
-  <rect width="240" height="300" fill="#e0f2fe" rx="4"/>
-  <path d="M0,0 L55,0 L60,40 L65,90 L58,160 L52,220 L46,300 L0,300 Z" fill="#93c5fd" opacity="0.7"/>
-  <path d="M55,0 L220,0 L220,105 L55,105 Z" fill="#86efac" opacity="0.55"/>
-  <path d="M55,105 L220,105 L220,195 L55,195 Z" fill="#fde68a" opacity="0.6"/>
-  <path d="M55,195 L220,195 L220,300 L46,300 L52,220 Z" fill="#fed7aa" opacity="0.65"/>
-  <path d="M200,5 Q196,55 200,105 Q204,160 196,220 Q190,270 184,300" stroke="#60a5fa" fill="none" stroke-width="2.5" opacity="0.75"/>
-  <text x="28" y="148" font-size="7" fill="#1e40af" transform="rotate(-90,28,148)" font-family="Arial" font-weight="bold">Mar Mediterrâneo</text>
-  <text x="128" y="55" text-anchor="middle" font-size="11" font-weight="bold" fill="#14532d" font-family="Arial">GALILEIA</text>
-  <text x="128" y="155" text-anchor="middle" font-size="10" font-weight="bold" fill="#92400e" font-family="Arial">SAMARIA</text>
-  <text x="130" y="250" text-anchor="middle" font-size="11" font-weight="bold" fill="#7c2d12" font-family="Arial">JUDEIA</text>
-  <text x="205" y="165" font-size="7" fill="#1e40af" transform="rotate(80,205,165)" font-family="Arial">Rio Jordão</text>
-  <circle cx="125" cy="65" r="4" fill="#1a2744"/>
-  <text x="131" y="69" font-size="8" fill="#1a2744" font-family="Arial">Caná</text>
-  <circle cx="100" cy="82" r="3.5" fill="#1a2744"/>
-  <text x="106" y="86" font-size="7.5" fill="#1a2744" font-family="Arial">Nazaré</text>
-  <circle cx="190" cy="145" r="3.5" fill="#1a2744"/>
-  <text x="115" y="142" font-size="6.5" fill="#1a2744" font-family="Arial">Betânia (Jordão)</text>
-  <circle cx="112" cy="240" r="5" fill="#1a2744"/>
-  <text x="119" y="244" font-size="8.5" fill="#1a2744" font-weight="bold" font-family="Arial">Jerusalém</text>
-  <circle cx="115" cy="270" r="3.5" fill="#1a2744"/>
-  <text x="121" y="274" font-size="7.5" fill="#1a2744" font-family="Arial">Belém</text>
-  <text x="218" y="18" font-size="12" font-weight="bold" fill="#1a2744" font-family="Arial">N</text>
-  <line x1="223" y1="20" x2="223" y2="32" stroke="#1a2744" stroke-width="1.5"/>
-  <polygon points="223,8 220,20 226,20" fill="#1a2744"/>
+    return '''<svg viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <linearGradient id="sea" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#bfdbfe"/>
+      <stop offset="100%" stop-color="#93c5fd"/>
+    </linearGradient>
+  </defs>
+  <!-- Background sea -->
+  <rect width="220" height="300" fill="url(#sea)"/>
+  <!-- Land mass -->
+  <path d="M55,0 L55,20 Q50,30 52,50 Q54,70 50,90 Q46,110 48,130 Q50,150 48,170 Q46,190 50,220 Q52,240 48,260 Q45,280 50,300 L220,300 L220,0 Z" fill="#d4e8c2"/>
+  <!-- Galilee region -->
+  <path d="M55,20 Q80,15 130,18 Q160,20 180,30 L180,100 Q160,95 130,97 Q100,99 80,95 Q60,91 55,90 Z" fill="#86efac" opacity="0.7"/>
+  <!-- Samaria -->
+  <path d="M55,90 Q70,88 100,92 Q130,96 165,90 L165,165 Q145,162 120,165 Q90,168 70,162 Q58,158 55,155 Z" fill="#fde68a" opacity="0.7"/>
+  <!-- Judeia -->
+  <path d="M55,155 Q70,152 100,158 Q130,162 165,155 L165,240 Q145,238 120,240 Q90,242 70,237 Q57,233 55,228 Z" fill="#fed7aa" opacity="0.7"/>
+  <!-- Dead Sea -->
+  <ellipse cx="160" cy="195" rx="18" ry="30" fill="#7dd3fc" opacity="0.8"/>
+  <text x="152" y="199" font-size="5.5" fill="#0369a1" font-weight="bold">Mar</text>
+  <text x="151" y="206" font-size="5.5" fill="#0369a1" font-weight="bold">Morto</text>
+  <!-- Jordan River -->
+  <path d="M175,30 Q170,70 172,110 Q174,150 168,200 Q165,225 162,260" stroke="#60a5fa" stroke-width="3" fill="none" opacity="0.8"/>
+  <!-- Sea of Galilee -->
+  <ellipse cx="168" cy="80" rx="14" ry="20" fill="#60a5fa" opacity="0.8"/>
+  <text x="155" y="78" font-size="5" fill="#1d4ed8">Mar da</text>
+  <text x="153" y="85" font-size="5" fill="#1d4ed8">Galileia</text>
+  <!-- Mediterranean label -->
+  <text x="5" y="130" font-size="7" fill="#1d4ed8" transform="rotate(-90,20,130)" font-style="italic">Mar Mediterrâneo</text>
+  <!-- Region labels -->
+  <text x="78" y="58" font-size="9" fill="#166534" font-weight="bold">GALILEIA</text>
+  <text x="75" y="128" font-size="9" fill="#92400e" font-weight="bold">SAMARIA</text>
+  <text x="75" y="200" font-size="9" fill="#7c2d12" font-weight="bold">JUDEIA</text>
+  <!-- Cities -->
+  <circle cx="120" cy="50" r="4" fill="#1a2744"/>
+  <text x="126" y="54" font-size="7" fill="#1a2744" font-weight="bold">Nazaré</text>
+  <circle cx="110" cy="78" r="4" fill="#1a2744"/>
+  <text x="116" y="82" font-size="7" fill="#1a2744">Caná</text>
+  <circle cx="100" cy="230" r="5" fill="#dc2626"/>
+  <text x="107" y="235" font-size="8" fill="#dc2626" font-weight="bold">Jerusalém</text>
+  <circle cx="115" cy="248" r="3.5" fill="#1a2744"/>
+  <text x="120" y="252" font-size="6.5" fill="#1a2744">Betânia</text>
+  <circle cx="168" cy="125" r="4" fill="#1a2744"/>
+  <text x="175" y="129" font-size="7" fill="#1a2744">Jericó</text>
+  <!-- Jordan label -->
+  <text x="178" y="145" font-size="6" fill="#1d4ed8" transform="rotate(85,178,145)">Rio Jordão</text>
+  <!-- Compass rose -->
+  <g transform="translate(25,260)">
+    <line x1="0" y1="-14" x2="0" y2="14" stroke="#1a2744" stroke-width="1.5"/>
+    <line x1="-14" y1="0" x2="14" y2="0" stroke="#1a2744" stroke-width="1.5"/>
+    <polygon points="0,-14 -3,-6 3,-6" fill="#1a2744"/>
+    <text x="-3" y="-16" font-size="7" fill="#1a2744" font-weight="bold">N</text>
+  </g>
+  <!-- Scale -->
+  <line x1="80" y1="285" x2="160" y2="285" stroke="#1a2744" stroke-width="2"/>
+  <line x1="80" y1="280" x2="80" y2="290" stroke="#1a2744" stroke-width="2"/>
+  <line x1="160" y1="280" x2="160" y2="290" stroke="#1a2744" stroke-width="2"/>
+  <text x="100" y="298" font-size="6.5" fill="#1a2744">~100 km</text>
 </svg>'''
 
-# ─────────────────────────────── CSS ────────────────────────────────────────
+def svg_open_book():
+    return '''<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e5d5b0"/>
+      <stop offset="50%" stop-color="#f5f0e8"/>
+      <stop offset="100%" stop-color="#e5d5b0"/>
+    </linearGradient>
+  </defs>
+  <!-- Book shadow -->
+  <ellipse cx="150" cy="170" rx="130" ry="12" fill="#0a1525" opacity="0.3"/>
+  <!-- Left page -->
+  <path d="M30,20 Q32,18 145,15 L145,165 Q32,162 30,160 Z" fill="url(#pg)"/>
+  <!-- Right page -->
+  <path d="M155,15 Q268,18 270,20 L270,160 Q268,162 155,165 Z" fill="url(#pg)"/>
+  <!-- Spine -->
+  <rect x="143" y="12" width="14" height="155" rx="2" fill="#c9a84c" opacity="0.8"/>
+  <!-- Text lines on left page -->
+  <rect x="45" y="35" width="85" height="4" rx="2" fill="#1a2744" opacity="0.3"/>
+  <rect x="45" y="45" width="80" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="45" y="53" width="85" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="45" y="61" width="75" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="45" y="80" width="85" height="4" rx="2" fill="#1a2744" opacity="0.3"/>
+  <rect x="45" y="90" width="78" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="45" y="98" width="85" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="45" y="106" width="70" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <!-- Text lines on right page -->
+  <rect x="168" y="35" width="85" height="4" rx="2" fill="#1a2744" opacity="0.3"/>
+  <rect x="168" y="45" width="80" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="168" y="53" width="85" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="168" y="61" width="75" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="168" y="80" width="85" height="4" rx="2" fill="#1a2744" opacity="0.3"/>
+  <rect x="168" y="90" width="78" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <!-- Illuminated initial -->
+  <rect x="45" y="125" width="30" height="30" rx="4" fill="#c9a84c" opacity="0.5"/>
+  <text x="50" y="147" font-size="22" fill="#1a2744" font-family="Georgia" opacity="0.8">J</text>
+  <rect x="80" y="130" width="60" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="80" y="138" width="55" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+  <rect x="80" y="146" width="60" height="3" rx="2" fill="#1a2744" opacity="0.2"/>
+</svg>'''
 
-def make_css():
-    return """
-:root {
-  --navy: #1a2744; --gold: #c9a84c; --cream: #f5f0e8;
-  --green: #2d6a4f; --purple: #6b3d8f; --orange: #e07b39; --gray: #8b8680;
-  --page-w: 460px; --page-h: 640px; --spine: 40px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:#2c3e50;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  font-family:'Georgia',serif;
-  overflow-x:hidden;
-  padding:20px 0 80px;
-}
-/* ── Book shell ── */
-.scene{
-  perspective:2200px;
-  width:calc(var(--page-w)*2 + var(--spine));
-  max-width:98vw;
-}
-.book-wrap{
-  position:relative;
-  width:100%;
-  height:var(--page-h);
-  transform-style:preserve-3d;
-  transform:rotateY(-4deg);
-  transition:transform .4s ease;
-  box-shadow:0 30px 80px rgba(0,0,0,0.7), 0 10px 30px rgba(0,0,0,0.4);
-}
-.book-wrap:hover{transform:rotateY(-1deg)}
-/* Spine */
-.spine{
-  position:absolute;
-  left:calc(50% - var(--spine)/2);
-  top:0;
-  width:var(--spine);
-  height:100%;
-  background:linear-gradient(to right,
-    rgba(0,0,0,0.45) 0%,
-    rgba(0,0,0,0.08) 40%,
-    rgba(0,0,0,0.08) 60%,
-    rgba(0,0,0,0.45) 100%);
-  z-index:20;
-  pointer-events:none;
-}
-/* ── Spreads ── */
-.spread{
-  position:absolute;
-  top:0;left:0;
-  width:100%;height:100%;
-  display:flex;
-  opacity:0;
-  transform:translateX(40px) scale(0.97);
-  transition:opacity .5s ease, transform .5s ease;
-  pointer-events:none;
-}
-.spread.active{
-  opacity:1;
-  transform:translateX(0) scale(1);
-  pointer-events:all;
-  z-index:10;
-}
-.spread.exit-left{
-  opacity:0;
-  transform:translateX(-40px) scale(0.97);
-}
+# ─── CSS ─────────────────────────────────────────────────────────────────────
+
+CSS = f"""
+*, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
+:root {{
+  --navy:   {NAVY};
+  --gold:   {GOLD};
+  --cream:  {CREAM};
+  --green:  {GREEN};
+  --purple: {PURPLE};
+  --orange: {ORANGE};
+  --gray:   {GRAY};
+  --spine-w: 28px;
+  --page-w: 420px;
+  --page-h: 560px;
+  --book-w: calc(var(--page-w) * 2 + var(--spine-w));
+  --radius: 4px;
+}}
+
+html, body {{
+  height: 100%;
+  background: #2a1f0e;
+  font-family: Georgia, 'Times New Roman', serif;
+  overflow: hidden;
+}}
+
+/* Paper texture overlay */
+body::before {{
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}}
+
+/* ── Scene ── */
+.scene {{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  perspective: 2400px;
+  gap: 16px;
+}}
+
+/* ── Book ── */
+.book {{
+  position: relative;
+  width: var(--book-w);
+  height: var(--page-h);
+  transform-style: preserve-3d;
+  transform: rotateX(2deg);
+  filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7)) drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+}}
+
+/* Page stack depth illusion */
+.book::before {{
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: -4px;
+  background: linear-gradient(to bottom, #e0d0b0, #c8b888);
+  border-radius: var(--radius);
+  z-index: 0;
+}}
+.book::after {{
+  content: '';
+  position: absolute;
+  top: 8px; left: 8px; right: 8px; bottom: -8px;
+  background: linear-gradient(to bottom, #d4c49c, #b8a878);
+  border-radius: var(--radius);
+  z-index: -1;
+}}
+
+/* ── Spread ── */
+.spread {{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: var(--page-w) var(--spine-w) var(--page-w);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+}}
+
+.spread.active {{
+  opacity: 1;
+  pointer-events: all;
+  z-index: 10;
+}}
+
+/* Page turn animations */
+@keyframes flipInR {{
+  from {{ transform: perspective(1400px) rotateY(-25deg); opacity: 0; }}
+  to   {{ transform: perspective(1400px) rotateY(0deg);  opacity: 1; }}
+}}
+@keyframes flipOutL {{
+  from {{ transform: perspective(1400px) rotateY(0deg);  opacity: 1; }}
+  to   {{ transform: perspective(1400px) rotateY(25deg); opacity: 0; }}
+}}
+@keyframes flipInL {{
+  from {{ transform: perspective(1400px) rotateY(25deg); opacity: 0; }}
+  to   {{ transform: perspective(1400px) rotateY(0deg);  opacity: 1; }}
+}}
+@keyframes flipOutR {{
+  from {{ transform: perspective(1400px) rotateY(0deg);   opacity: 1; }}
+  to   {{ transform: perspective(1400px) rotateY(-25deg); opacity: 0; }}
+}}
+
+.spread.anim-in-right  {{ animation: flipInR 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }}
+.spread.anim-out-left  {{ animation: flipOutL 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }}
+.spread.anim-in-left   {{ animation: flipInL 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }}
+.spread.anim-out-right {{ animation: flipOutR 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }}
+
 /* ── Pages ── */
-.page{
-  flex:0 0 calc(50% - var(--spine)/2);
-  height:100%;
-  background:var(--cream);
-  overflow:hidden;
-  position:relative;
-}
-.page.left{
-  border-radius:4px 0 0 4px;
-  box-shadow:-4px 0 12px rgba(0,0,0,0.2);
-  background:linear-gradient(to right,
-    #ede8df 0%,
-    #f5f0e8 6%,
-    #f5f0e8 100%);
-}
-.page.right{
-  border-radius:0 4px 4px 0;
-  box-shadow:4px 0 12px rgba(0,0,0,0.2);
-  background:linear-gradient(to left,
-    #ede8df 0%,
-    #f5f0e8 6%,
-    #f5f0e8 100%);
-}
-/* Full-bleed pages (cover, back) */
-.page.full-bleed{
-  flex:0 0 100%;
-  border-radius:4px;
-  background:var(--navy);
-}
-/* ── Section header chip ── */
-.sec-head{
-  background:var(--navy);
-  color:var(--gold);
-  padding:7px 14px;
-  font-size:10px;
-  font-weight:bold;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-family:Arial,sans-serif;
-}
-.sec-head.green{background:var(--green)}
-.sec-head.purple{background:var(--purple)}
-.sec-head.orange{background:var(--orange)}
-.sec-head.gold{background:var(--gold);color:var(--navy)}
-/* ── Scroll area inside page ── */
-.pg-scroll{
-  height:calc(100% - 0px);
-  overflow-y:auto;
-  scrollbar-width:thin;
-  scrollbar-color:var(--gold) transparent;
-}
-.pg-scroll::-webkit-scrollbar{width:4px}
-.pg-scroll::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
-.pg-pad{padding:18px}
-.pg-pad-sm{padding:12px}
-/* ── Cover styles ── */
-.cover-inner{
-  position:relative;
-  width:100%;height:100%;
-  background:var(--navy);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-.cover-serie{
-  color:var(--gold);
-  font-size:9px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  font-family:Arial,sans-serif;
-  border:1px solid var(--gold);
-  padding:4px 12px;
-  margin-bottom:16px;
-  opacity:0.85;
-}
-.cover-book{
-  color:var(--gold);
-  font-size:72px;
-  font-weight:bold;
-  letter-spacing:8px;
-  line-height:1;
-  text-shadow:0 0 40px rgba(201,168,76,0.5);
-}
-.cover-subtitle{
-  color:#c8d6e5;
-  font-size:11px;
-  letter-spacing:4px;
-  text-transform:uppercase;
-  font-family:Arial,sans-serif;
-  margin-top:8px;
-  opacity:0.8;
-}
-.cover-divider{
-  width:120px;height:1px;
-  background:var(--gold);
-  margin:20px auto;
-  opacity:0.5;
-}
-.cover-cap-box{
-  border:2px solid var(--gold);
-  padding:8px 24px;
-  margin:8px 0;
-}
-.cover-cap-label{
-  color:var(--gold);
-  font-size:10px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  font-family:Arial,sans-serif;
-}
-.cover-cap-num{
-  color:var(--gold);
-  font-size:28px;
-  font-weight:bold;
-  text-align:center;
-  line-height:1.2;
-}
-.cover-title{
-  color:white;
-  font-size:18px;
-  text-align:center;
-  margin-top:12px;
-  font-style:italic;
-  letter-spacing:1px;
-}
-.cover-verse{
-  color:#c8d6e5;
-  font-size:12px;
-  text-align:center;
-  font-style:italic;
-  margin-top:20px;
-  padding:0 40px;
-  line-height:1.6;
-  opacity:0.9;
-}
-.cover-verse-ref{
-  color:var(--gold);
-  font-size:10px;
-  font-family:Arial,sans-serif;
-  letter-spacing:1px;
-  margin-top:6px;
-}
+.page {{
+  background: var(--cream);
+  overflow: hidden;
+  position: relative;
+}}
+
+.page-left {{
+  border-radius: var(--radius) 0 0 var(--radius);
+  box-shadow: inset -8px 0 20px rgba(0,0,0,0.12);
+}}
+
+.page-right {{
+  border-radius: 0 var(--radius) var(--radius) 0;
+  box-shadow: inset 8px 0 20px rgba(0,0,0,0.12);
+}}
+
+.page-content {{
+  padding: 32px 28px;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) transparent;
+}}
+
+.page-content::-webkit-scrollbar {{ width: 4px; }}
+.page-content::-webkit-scrollbar-track {{ background: transparent; }}
+.page-content::-webkit-scrollbar-thumb {{ background: var(--gold); border-radius: 2px; }}
+
+/* ── Spine ── */
+.spine {{
+  background: linear-gradient(to right,
+    #8a6830 0%, #c9a84c 20%, #e8c97a 40%, #c9a84c 60%, #8a6830 80%, #7a5820 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: inset -3px 0 8px rgba(0,0,0,0.3), inset 3px 0 8px rgba(0,0,0,0.3);
+}}
+
+.spine-text {{
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: var(--navy);
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}}
+
+/* ── Typography ── */
+.page-header {{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+}}
+
+.section-icon {{
+  width: 28px; height: 28px;
+  background: var(--navy);
+  color: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}}
+
+.page-title {{
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}}
+
+h1.chapter-title {{
+  font-size: 28px;
+  color: var(--navy);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}}
+
+h2.section-title {{
+  font-size: 16px;
+  color: var(--navy);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}}
+
+h3.subsection-title {{
+  font-size: 13px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}}
+
+p.body-text {{
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #2a2218;
+  margin-bottom: 10px;
+}}
+
+.verse-quote {{
+  border-left: 3px solid var(--gold);
+  padding: 8px 14px;
+  margin: 12px 0;
+  font-style: italic;
+  font-size: 11px;
+  color: var(--navy);
+  background: rgba(201,168,76,0.08);
+  border-radius: 0 4px 4px 0;
+}}
+
+.verse-ref {{
+  font-size: 10px;
+  color: var(--gray);
+  text-align: right;
+  margin-top: 4px;
+  font-style: normal;
+}}
+
+.gold-divider {{
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  margin: 14px 0;
+}}
+
+.tag-list {{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}}
+
+.tag {{
+  background: rgba(26,39,68,0.1);
+  color: var(--navy);
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 9.5px;
+  font-family: Arial, sans-serif;
+}}
+
+.running-header {{
+  position: absolute;
+  top: 12px;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-family: Arial, sans-serif;
+}}
+.running-header.left  {{ left: 28px; }}
+.running-header.right {{ right: 28px; }}
+
+.page-number {{
+  position: absolute;
+  bottom: 14px;
+  font-size: 9px;
+  color: var(--gray);
+  font-family: Arial, sans-serif;
+}}
+.page-number.left  {{ left: 28px; }}
+.page-number.right {{ right: 28px; }}
+
+/* ── Cover ── */
+.cover-full {{
+  grid-column: 1 / 4;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}}
+
+.cover-bg {{
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}}
+
+.cover-overlay {{
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(10,21,37,0.3) 0%,
+    rgba(10,21,37,0.5) 40%,
+    rgba(10,21,37,0.85) 75%,
+    rgba(10,21,37,0.98) 100%
+  );
+}}
+
+.cover-content {{
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 40px 60px;
+  text-align: center;
+}}
+
+.cover-serie {{
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  margin-bottom: 8px;
+  border: 1px solid rgba(201,168,76,0.4);
+  padding: 4px 16px;
+  border-radius: 20px;
+}}
+
+.cover-main-title {{
+  font-size: 56px;
+  color: white;
+  font-weight: bold;
+  line-height: 0.9;
+  margin-bottom: 10px;
+}}
+
+.cover-chapter {{
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: Arial, sans-serif;
+  margin-bottom: 6px;
+}}
+
+.cover-subtitle {{
+  font-size: 22px;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 20px;
+  font-style: italic;
+}}
+
+.cover-verse {{
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  max-width: 480px;
+  font-style: italic;
+  line-height: 1.6;
+  border-top: 1px solid rgba(201,168,76,0.3);
+  padding-top: 16px;
+}}
+
+.cover-verse-ref {{
+  font-size: 10px;
+  color: var(--gold);
+  margin-top: 6px;
+  font-style: normal;
+  letter-spacing: 1px;
+}}
+
 /* ── TOC ── */
-.toc-item{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid rgba(201,168,76,0.2);
-  cursor:pointer;
-  transition:background .2s;
-  border-radius:4px;
-  padding-left:8px;
-}
-.toc-item:hover{background:rgba(201,168,76,0.1)}
-.toc-num{
-  width:28px;height:28px;
-  background:var(--navy);
-  color:var(--gold);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:bold;
-  flex-shrink:0;
-  font-family:Arial,sans-serif;
-}
-.toc-text{flex:1}
-.toc-spread{font-size:13px;color:var(--navy);font-weight:bold}
-.toc-ref{font-size:10px;color:var(--gray);font-family:Arial,sans-serif;margin-top:2px}
-.toc-arrow{color:var(--gold);font-size:14px}
-/* ── Character cards ── */
-.char-card{
-  border-radius:8px;
-  overflow:hidden;
-  margin-bottom:14px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.12);
-}
-.char-head{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px 14px;
-  color:white;
-}
-.char-avatar{
-  width:46px;height:46px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;font-weight:bold;
-  flex-shrink:0;
-  border:2px solid rgba(255,255,255,0.4);
-}
-.char-nome{font-size:14px;font-weight:bold;font-family:Arial,sans-serif}
-.char-titulo{font-size:10px;opacity:0.8;font-family:Arial,sans-serif;letter-spacing:.5px}
-.char-body{padding:10px 14px;background:white;font-size:11px;color:#444;line-height:1.55}
-.char-verse{
-  margin-top:8px;padding:6px 10px;
-  background:#f8f5ee;
-  border-left:3px solid var(--gold);
-  font-style:italic;
-  font-size:10.5px;color:var(--navy);
-}
+.toc-item {{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dotted rgba(201,168,76,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}}
+.toc-item:hover {{ background: rgba(201,168,76,0.08); border-radius: 4px; padding-left: 6px; }}
+.toc-item.active {{ color: var(--gold); }}
+.toc-num {{
+  width: 22px; height: 22px;
+  background: var(--navy);
+  color: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  font-family: Arial, sans-serif;
+  flex-shrink: 0;
+}}
+.toc-label {{
+  font-size: 11px;
+  color: var(--navy);
+  flex: 1;
+  font-family: Arial, sans-serif;
+}}
+.toc-dots {{
+  flex: 1;
+  border-bottom: 1px dotted var(--gray);
+  margin: 0 6px;
+  height: 0;
+  align-self: center;
+}}
+.toc-page-n {{
+  font-size: 10px;
+  color: var(--gray);
+  font-family: Arial, sans-serif;
+}}
+
+/* ── Characters ── */
+.character-card {{
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.6);
+  margin-bottom: 14px;
+  border-left: 3px solid var(--gold);
+}}
+.char-avatar {{
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: white;
+  font-weight: bold;
+  font-family: Georgia, serif;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}}
+.char-name {{ font-size: 12px; font-weight: bold; color: var(--navy); margin-bottom: 2px; }}
+.char-role {{ font-size: 9.5px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; font-family: Arial, sans-serif; }}
+.char-desc {{ font-size: 10.5px; line-height: 1.55; color: #3a3020; }}
+.char-verse {{ font-size: 9.5px; font-style: italic; color: var(--navy); margin-top: 5px; opacity: 0.8; }}
+
 /* ── Timeline ── */
-.timeline{position:relative;padding-left:24px}
-.timeline::before{
-  content:'';position:absolute;left:8px;top:0;bottom:0;
-  width:2px;background:var(--gold);opacity:0.4;
-}
-.tl-item{position:relative;margin-bottom:12px}
-.tl-dot{
-  position:absolute;left:-20px;top:4px;
-  width:10px;height:10px;
-  border-radius:50%;
-  background:var(--gold);
-  border:2px solid white;
-  box-shadow:0 0 0 1px var(--gold);
-}
-.tl-year{font-size:10px;font-weight:bold;color:var(--navy);font-family:Arial,sans-serif}
-.tl-event{font-size:10.5px;color:#555;line-height:1.4;margin-top:2px}
-/* ── Flip cards ── */
-.flip-card{
-  perspective:900px;
-  cursor:pointer;
-  height:100%;
-  min-height:200px;
-}
-.flip-inner{
-  position:relative;
-  width:100%;height:100%;
-  transform-style:preserve-3d;
-  transition:transform .55s cubic-bezier(.4,0,.2,1);
-}
-.flip-card.flipped .flip-inner{transform:rotateY(180deg)}
-.flip-front,.flip-back{
-  position:absolute;
-  top:0;left:0;
-  width:100%;height:100%;
-  backface-visibility:hidden;
-  border-radius:8px;
-  overflow:hidden;
-}
-.flip-back{transform:rotateY(180deg)}
-.flip-front-inner{
-  height:100%;
-  display:flex;flex-direction:column;
-  padding:14px;
-}
-.flip-num{
-  font-size:28px;font-weight:bold;
-  line-height:1;
-  color:rgba(255,255,255,0.3);
-  font-family:Arial,sans-serif;
-}
-.flip-ref{font-size:10px;color:rgba(255,255,255,0.7);font-family:Arial,sans-serif;letter-spacing:.5px;margin-top:2px}
-.flip-title{font-size:13px;font-weight:bold;color:white;margin-top:8px;font-family:Arial,sans-serif;line-height:1.3}
-.flip-text{
-  font-size:10.5px;color:rgba(255,255,255,0.88);
-  line-height:1.55;
-  margin-top:10px;flex:1;
-  font-style:italic;
-}
-.flip-hint{
-  margin-top:10px;
-  font-size:9.5px;
-  color:rgba(255,255,255,0.55);
-  text-align:center;
-  font-family:Arial,sans-serif;
-  border-top:1px solid rgba(255,255,255,0.15);
-  padding-top:8px;
-}
-.flip-back-inner{
-  height:100%;
-  display:flex;flex-direction:column;
-  padding:14px;
-  background:white;
-}
-.flip-back-label{
-  font-size:9px;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  color:var(--gold);
-  font-family:Arial,sans-serif;
-  font-weight:bold;
-}
-.flip-back-title{font-size:14px;font-weight:bold;color:var(--navy);margin-top:6px;font-family:Arial,sans-serif}
-.flip-back-text{font-size:11px;color:#444;line-height:1.6;margin-top:10px;flex:1}
-.flip-back-hint{
-  font-size:9.5px;color:var(--gray);
-  text-align:center;
-  border-top:1px solid #e5e5e5;
-  padding-top:8px;
-  margin-top:8px;
-  font-family:Arial,sans-serif;
-}
-/* ── Synthesis cards ── */
-.syn-card{
-  border-radius:8px;
-  overflow:hidden;
-  margin-bottom:12px;
-}
-.syn-head{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;color:white;
-  font-family:Arial,sans-serif;
-}
-.syn-icon{font-size:18px;width:32px;text-align:center}
-.syn-title{font-size:13px;font-weight:bold}
-.syn-body{
-  padding:10px 14px;
-  font-size:11px;color:#444;
-  line-height:1.55;
-  background:white;
-}
-/* ── Curiosity cards ── */
-.cur-card{
-  border-radius:8px;
-  overflow:hidden;
-  margin-bottom:14px;
-  border:1px solid #e5dcc8;
-}
-.cur-head{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 12px;
-  background:var(--navy);color:var(--gold);
-  font-family:Arial,sans-serif;
-}
-.cur-icon{font-size:16px}
-.cur-title{font-size:11px;font-weight:bold;letter-spacing:.5px}
-.cur-body{padding:10px 12px;font-size:11px;color:#444;line-height:1.55}
-/* ── Application & Challenge ── */
-.app-item{
-  display:flex;align-items:flex-start;gap:12px;
-  padding:10px 0;border-bottom:1px solid #e8e2d8;
-}
-.app-num{
-  width:30px;height:30px;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:bold;color:white;
-  flex-shrink:0;
-  font-family:Arial,sans-serif;
-}
-.app-content{}
-.app-title{font-size:12px;font-weight:bold;color:var(--navy);font-family:Arial,sans-serif}
-.app-text{font-size:10.5px;color:#555;line-height:1.5;margin-top:3px}
-.challenge-item{
-  display:flex;align-items:flex-start;gap:8px;
-  margin-bottom:10px;
-  padding:8px 10px;
-  background:#fff8e7;
-  border-radius:6px;
-  border-left:3px solid var(--orange);
-}
-.challenge-check{
-  width:20px;height:20px;
-  border:2px solid var(--orange);
-  border-radius:4px;
-  flex-shrink:0;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;
-  color:var(--orange);
-  transition:background .2s;
-}
-.challenge-check.done{background:var(--orange);color:white}
-.challenge-text{font-size:11px;color:#555;line-height:1.45}
-/* ── Diary / Reflection ── */
-.reflection-q{margin-bottom:14px}
-.q-label{
-  font-size:11px;font-weight:bold;color:var(--navy);
-  font-family:Arial,sans-serif;
-  margin-bottom:5px;
-  display:flex;align-items:center;gap:6px;
-}
-.q-num{
-  width:20px;height:20px;
-  background:var(--navy);color:var(--gold);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:bold;
-  flex-shrink:0;font-family:Arial,sans-serif;
-}
-.q-textarea{
-  width:100%;
-  min-height:60px;
-  border:1px solid #ddd;
-  border-radius:6px;
-  padding:8px;
-  font-size:11px;
-  color:#333;
-  background:#fffdf7;
-  resize:vertical;
-  font-family:'Georgia',serif;
-  transition:border-color .2s;
-  box-sizing:border-box;
-}
-.q-textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,0.15)}
-/* ── Memory exercise ── */
-.memory-verse{
-  font-size:14px;color:var(--navy);
-  line-height:2.2;
-  text-align:center;
-  padding:10px 0;
-}
-.mem-blank{
-  display:inline-block;
-  border:none;
-  border-bottom:2px solid var(--navy);
-  width:70px;
-  text-align:center;
-  font-size:13px;
-  font-family:'Georgia',serif;
-  color:var(--navy);
-  background:transparent;
-  padding:0 4px;
-  transition:border-color .2s;
-}
-.mem-blank:focus{outline:none;border-color:var(--gold)}
-.mem-blank.correct{border-color:#22c55e;color:#22c55e}
-.mem-blank.wrong{border-color:#ef4444;color:#ef4444}
-.mem-ref{
-  font-size:10px;color:var(--gold);
-  font-family:Arial,sans-serif;
-  letter-spacing:1px;
-  text-align:center;
-  margin-top:8px;
-}
-.mem-btns{display:flex;gap:8px;justify-content:center;margin-top:14px}
-.mem-btn{
-  padding:7px 18px;border:none;border-radius:20px;
-  font-size:12px;font-family:Arial,sans-serif;
-  cursor:pointer;transition:all .2s;
-}
-.mem-btn.check{background:var(--navy);color:var(--gold)}
-.mem-btn.reveal{background:transparent;border:1px solid var(--navy);color:var(--navy)}
-.mem-btn:hover{opacity:.85}
-.mem-result{
-  text-align:center;font-size:12px;
-  margin-top:8px;padding:6px;
-  border-radius:4px;
-  font-family:Arial,sans-serif;
-}
-/* ── Prayer ── */
-.prayer-box{
-  background:linear-gradient(135deg,var(--navy) 0%,#2a3f6e 100%);
-  border-radius:8px;padding:18px;
-  color:rgba(255,255,255,0.9);
-  font-size:11.5px;line-height:1.7;
-  font-style:italic;
-  position:relative;
-}
-.prayer-quote{
-  font-size:40px;color:var(--gold);opacity:0.3;
-  line-height:1;
-  position:absolute;top:10px;left:14px;
-  font-family:Georgia,serif;
-}
-.prayer-text{margin-top:24px;position:relative;z-index:1}
-.prayer-amen{
-  text-align:right;
-  color:var(--gold);
-  font-size:12px;
-  font-style:normal;
-  font-weight:bold;
-  margin-top:10px;
-  font-family:Arial,sans-serif;
-}
-/* ── Back cover ── */
-.back-cover{
-  position:relative;
-  width:100%;height:100%;
-  background:var(--navy);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.bc-next{
-  border:2px solid var(--gold);
-  padding:16px 32px;
-  text-align:center;
-  margin:20px;
-}
-.bc-next-label{color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif}
-.bc-next-title{color:white;font-size:18px;font-weight:bold;margin-top:4px}
-.bc-next-ref{color:rgba(255,255,255,0.6);font-size:11px;font-family:Arial,sans-serif;margin-top:4px}
-/* ── Navigation ── */
-.nav-bar{
-  display:flex;align-items:center;gap:16px;
-  margin-top:18px;
-}
-.nav-btn{
-  width:46px;height:46px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,0.4);
-  background:rgba(255,255,255,0.1);
-  color:white;font-size:20px;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
-  backdrop-filter:blur(4px);
-}
-.nav-btn:hover:not(:disabled){background:rgba(255,255,255,0.25);border-color:white}
-.nav-btn:disabled{opacity:.3;cursor:default}
-.nav-info{
-  color:rgba(255,255,255,0.8);
-  font-size:12px;font-family:Arial,sans-serif;
-  text-align:center;min-width:80px;
-}
-.nav-dots{
-  display:flex;gap:6px;justify-content:center;margin-top:8px;
-}
-.nav-dot{
-  width:7px;height:7px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.3);
-  cursor:pointer;transition:background .2s;
-}
-.nav-dot.active{background:var(--gold)}
-/* ── Progress bar ── */
-.progress-bar{
-  position:fixed;top:0;left:0;
-  width:0%;height:3px;
-  background:linear-gradient(to right,var(--gold),#f5d06a);
-  z-index:1000;
-  transition:width .4s ease;
-}
-/* ── Input Panel (New Doc) ── */
-.fab{
-  position:fixed;bottom:24px;right:24px;
-  width:56px;height:56px;
-  border-radius:50%;
-  background:var(--gold);
-  color:var(--navy);
-  font-size:28px;font-weight:bold;
-  border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 20px rgba(0,0,0,0.35);
-  transition:all .25s;
-  z-index:500;
-  font-family:Arial,sans-serif;
-}
-.fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,0.45)}
-.fab-tooltip{
-  position:fixed;bottom:90px;right:28px;
-  background:rgba(0,0,0,0.75);color:white;
-  font-size:11px;padding:5px 10px;border-radius:4px;
-  font-family:Arial,sans-serif;
-  opacity:0;pointer-events:none;
-  transition:opacity .2s;
-  white-space:nowrap;
-  z-index:500;
-}
-.fab:hover + .fab-tooltip{opacity:1}
-.input-panel{
-  position:fixed;
-  top:0;right:0;bottom:0;
-  width:440px;max-width:100vw;
-  background:white;
-  z-index:600;
-  transform:translateX(100%);
-  transition:transform .35s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;
-  box-shadow:-8px 0 40px rgba(0,0,0,0.3);
-}
-.input-panel.open{transform:translateX(0)}
-.panel-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.5);
-  z-index:590;
-  opacity:0;pointer-events:none;
-  transition:opacity .35s;
-}
-.panel-overlay.open{opacity:1;pointer-events:all}
-.panel-header{
-  background:var(--navy);
-  padding:16px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.panel-header h3{color:var(--gold);font-size:16px;font-family:Arial,sans-serif}
-.panel-close{
-  background:none;border:none;color:rgba(255,255,255,0.7);
-  font-size:20px;cursor:pointer;padding:4px 8px;
-  transition:color .2s;
-}
-.panel-close:hover{color:white}
-.panel-tabs{
-  display:flex;
-  border-bottom:2px solid #e5e5e5;
-}
-.panel-tab{
-  flex:1;padding:12px;
-  background:none;border:none;
-  font-size:13px;font-family:Arial,sans-serif;
-  cursor:pointer;color:#888;
-  border-bottom:3px solid transparent;
-  margin-bottom:-2px;
-  transition:all .2s;
-}
-.panel-tab.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:bold}
-.panel-body{flex:1;overflow-y:auto;padding:16px}
-.panel-section{display:none}
-.panel-section.active{display:block}
-.panel-label{font-size:12px;font-weight:bold;color:var(--navy);font-family:Arial,sans-serif;margin-bottom:6px;margin-top:14px}
-.panel-label:first-child{margin-top:0}
-.panel-textarea{
-  width:100%;min-height:200px;
-  border:1px solid #ddd;border-radius:6px;
-  padding:10px;font-size:12px;
-  font-family:'Georgia',serif;color:#333;
-  resize:vertical;line-height:1.6;
-  transition:border-color .2s;
-}
-.panel-textarea:focus{outline:none;border-color:var(--gold)}
-.panel-hint{font-size:11px;color:#888;font-family:Arial,sans-serif;margin-top:4px;line-height:1.5}
-.pdf-drop{
-  border:2px dashed #ccc;border-radius:8px;
-  padding:30px 20px;text-align:center;
-  cursor:pointer;transition:all .2s;
-  margin-bottom:12px;
-  position:relative;
-}
-.pdf-drop:hover,.pdf-drop.drag{border-color:var(--gold);background:#fffbf0}
-.pdf-drop input[type=file]{
-  position:absolute;inset:0;opacity:0;cursor:pointer;
-}
-.pdf-drop-icon{font-size:36px;margin-bottom:8px}
-.pdf-drop-text{font-size:12px;color:#666;font-family:Arial,sans-serif}
-.pdf-drop-sub{font-size:10px;color:#999;margin-top:4px}
-.pdf-status{
-  padding:8px 12px;border-radius:6px;
-  font-size:11.5px;font-family:Arial,sans-serif;
-  margin-bottom:8px;
-}
-.pdf-status.loading{background:#f0f9ff;color:#0369a1}
-.pdf-status.success{background:#f0fdf4;color:#15803d}
-.pdf-status.error{background:#fef2f2;color:#dc2626}
-.panel-btn{
-  width:100%;padding:11px;border:none;border-radius:6px;
-  background:var(--navy);color:var(--gold);
-  font-size:13px;font-family:Arial,sans-serif;font-weight:bold;
-  cursor:pointer;margin-top:10px;
-  transition:opacity .2s;
-  letter-spacing:.5px;
-}
-.panel-btn:hover{opacity:.85}
-.panel-btn.secondary{
-  background:transparent;
-  border:1px solid var(--navy);
-  color:var(--navy);
-  margin-top:6px;
-}
-.panel-divider{
-  height:1px;background:#eee;margin:14px 0;
-}
-/* ── "O que aprendemos" checkmarks ── */
-.learn-item{
-  display:flex;align-items:flex-start;gap:8px;
-  padding:7px 0;border-bottom:1px solid #ece8df;
-  font-size:11.5px;color:#333;line-height:1.4;
-}
-.learn-check{color:var(--green);font-size:14px;flex-shrink:0;margin-top:1px}
-/* ── Panorama tags ── */
-.panorama-tag{
-  display:inline-block;
-  background:var(--navy);color:var(--gold);
-  border-radius:12px;padding:3px 10px;
-  font-size:10px;font-family:Arial,sans-serif;
-  margin:3px 2px;letter-spacing:.3px;
-}
+.timeline {{ position: relative; padding-left: 20px; }}
+.timeline::before {{
+  content: '';
+  position: absolute;
+  left: 7px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), rgba(201,168,76,0.2));
+}}
+.timeline-item {{ position: relative; margin-bottom: 12px; }}
+.timeline-dot {{
+  position: absolute;
+  left: -16px;
+  top: 4px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--cream);
+}}
+.timeline-year {{ font-size: 9px; font-weight: bold; color: var(--gold); font-family: Arial, sans-serif; }}
+.timeline-event {{ font-size: 10.5px; color: #3a3020; line-height: 1.4; }}
+
+/* ── Flip Cards ── */
+.flip-card {{
+  perspective: 1000px;
+  height: 100%;
+}}
+.flip-inner {{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-style: preserve-3d;
+}}
+.flip-inner.flipped {{ transform: rotateY(180deg); }}
+.flip-face, .flip-back {{
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  padding: 28px 24px;
+  overflow-y: auto;
+}}
+.flip-back {{
+  transform: rotateY(180deg);
+  background: var(--navy);
+  color: white;
+}}
+
+.bloco-header {{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}}
+.bloco-num {{
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  font-family: Arial, sans-serif;
+  flex-shrink: 0;
+}}
+.bloco-ref {{ font-size: 10px; color: var(--gray); font-family: Arial, sans-serif; margin-top: 1px; }}
+.bloco-title {{ font-size: 14px; font-weight: bold; color: var(--navy); }}
+.bloco-title-back {{ font-size: 14px; font-weight: bold; color: var(--gold); }}
+
+.bloco-text {{
+  font-size: 10.5px;
+  line-height: 1.65;
+  color: #3a3020;
+  font-style: italic;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 6px;
+  border-left: 3px solid var(--gold);
+  margin-bottom: 12px;
+}}
+
+.bloco-img {{
+  width: 100%;
+  height: 100px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}}
+.bloco-img svg {{ width: 100%; height: 100%; }}
+
+.flip-btn {{
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  margin-top: 12px;
+}}
+.flip-btn-reveal {{
+  background: var(--gold);
+  color: var(--navy);
+}}
+.flip-btn-back {{
+  background: rgba(201,168,76,0.2);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}}
+.flip-btn:hover {{ transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.2); }}
+
+.learning-text {{
+  font-size: 11px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 14px;
+}}
+
+/* ── Síntese ── */
+.tema-card {{
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}}
+.tema-card::before {{
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+}}
+.tema-icon {{ font-size: 20px; margin-bottom: 6px; }}
+.tema-title {{ font-size: 12px; font-weight: bold; color: var(--navy); margin-bottom: 6px; }}
+.tema-text {{ font-size: 10.5px; line-height: 1.6; color: #3a3020; }}
+
+/* ── Curiosidades ── */
+.curiosidade-card {{
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.5);
+  margin-bottom: 12px;
+  border: 1px solid rgba(201,168,76,0.2);
+}}
+.curio-icon {{ font-size: 22px; flex-shrink: 0; margin-top: 2px; }}
+.curio-title {{ font-size: 11px; font-weight: bold; color: var(--navy); margin-bottom: 4px; }}
+.curio-text {{ font-size: 10.5px; line-height: 1.6; color: #3a3020; }}
+
+/* ── Aplicação ── */
+.aplicacao-item {{
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px;
+}}
+.aplic-num {{
+  width: 28px; height: 28px;
+  background: var(--navy);
+  color: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  flex-shrink: 0;
+}}
+.aplic-title {{ font-size: 11.5px; font-weight: bold; color: var(--navy); margin-bottom: 4px; }}
+.aplic-text {{ font-size: 10.5px; line-height: 1.55; color: #3a3020; }}
+
+/* ── Desafio ── */
+.desafio-card {{
+  background: var(--navy);
+  border-radius: 10px;
+  padding: 18px;
+  color: white;
+}}
+.desafio-title {{ font-size: 13px; font-weight: bold; color: var(--gold); margin-bottom: 8px; }}
+.desafio-desc {{ font-size: 10.5px; line-height: 1.6; color: rgba(255,255,255,0.8); margin-bottom: 12px; }}
+.desafio-item {{
+  display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start;
+}}
+.desafio-check {{ color: var(--gold); font-size: 13px; flex-shrink: 0; margin-top: 1px; }}
+.desafio-text {{ font-size: 10.5px; line-height: 1.5; color: rgba(255,255,255,0.85); }}
+
+/* ── Reflexão ── */
+.reflection-q {{
+  margin-bottom: 14px;
+}}
+.q-num {{
+  font-size: 9px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}}
+.q-text {{
+  font-size: 11px;
+  color: var(--navy);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}}
+.q-textarea {{
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: Georgia, serif;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #2a2218;
+  background: rgba(255,255,255,0.6);
+  resize: vertical;
+  transition: border-color 0.2s;
+}}
+.q-textarea:focus {{ outline: none; border-color: var(--gold); }}
+.autosave-badge {{
+  font-size: 8.5px;
+  color: var(--gray);
+  font-family: Arial, sans-serif;
+  text-align: right;
+  margin-top: 2px;
+}}
+.saved {{ color: var(--green) !important; }}
+
+/* ── Memorização ── */
+.memory-verse-text {{
+  font-size: 15px;
+  line-height: 2;
+  color: var(--navy);
+  text-align: center;
+  margin: 20px 0;
+  font-style: italic;
+}}
+.memory-blank {{
+  display: inline-block;
+  min-width: 80px;
+  border-bottom: 2px solid var(--gold);
+  text-align: center;
+  margin: 0 4px;
+  vertical-align: bottom;
+}}
+.memory-input {{
+  width: 80px;
+  border: none;
+  border-bottom: 2px solid var(--gold);
+  background: transparent;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  color: var(--navy);
+  text-align: center;
+  outline: none;
+  padding: 2px 4px;
+  vertical-align: bottom;
+  margin: 0 2px;
+  transition: border-color 0.2s;
+}}
+.memory-input.correct {{ border-color: var(--green); color: var(--green); }}
+.memory-input.wrong   {{ border-color: #dc2626;     color: #dc2626; }}
+
+.memory-actions {{ display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }}
+.memory-btn {{
+  padding: 8px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  transition: all 0.2s;
+}}
+.memory-btn-check  {{ background: var(--navy); color: var(--gold); }}
+.memory-btn-reveal {{ background: transparent; color: var(--navy); border: 1px solid var(--navy); }}
+.memory-btn-reset  {{ background: transparent; color: var(--gray);  border: 1px solid var(--gray); }}
+.memory-btn:hover  {{ transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.15); }}
+
+.memory-feedback {{
+  text-align: center;
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  margin-top: 10px;
+  min-height: 18px;
+}}
+
+/* ── Oração ── */
+.prayer-box {{
+  background: linear-gradient(135deg, var(--navy) 0%, #2a3a6a 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}}
+.prayer-box::before {{
+  content: '✝';
+  position: absolute;
+  top: 10px; right: 20px;
+  font-size: 48px;
+  color: rgba(201,168,76,0.15);
+}}
+.prayer-title {{
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--gold);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: Arial, sans-serif;
+}}
+.prayer-text {{
+  font-size: 12px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.9);
+  font-style: italic;
+}}
+
+/* ── Back Cover ── */
+.back-cover-full {{
+  grid-column: 1 / 4;
+  background: linear-gradient(135deg, #0a1525 0%, var(--navy) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}}
+.back-cover-full::before {{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(201,168,76,0.1) 0%, transparent 70%);
+}}
+.back-cover-content {{
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 2;
+  padding: 40px;
+}}
+.next-chapter-badge {{
+  display: inline-block;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.4);
+  color: var(--gold);
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+  margin-bottom: 16px;
+}}
+.next-chapter-title {{ font-size: 22px; color: rgba(255,255,255,0.7); margin-bottom: 8px; font-style: italic; }}
+.next-chapter-subtitle {{ font-size: 15px; color: rgba(255,255,255,0.5); }}
+
+/* ── Controls ── */
+.controls {{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  user-select: none;
+}}
+
+.ctrl-btn {{
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(201,168,76,0.6);
+  background: rgba(26,39,68,0.8);
+  color: var(--gold);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}}
+.ctrl-btn:hover:not(:disabled) {{
+  background: var(--gold);
+  color: var(--navy);
+  transform: scale(1.05);
+}}
+.ctrl-btn:disabled {{ opacity: 0.3; cursor: default; }}
+
+.spread-indicator {{
+  color: rgba(245,240,232,0.6);
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  min-width: 60px;
+  text-align: center;
+}}
+
+/* ── Dot navigation ── */
+.dot-nav {{
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}}
+.dot {{
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}}
+.dot.active {{ background: var(--gold); transform: scale(1.3); }}
+.dot:hover {{ background: rgba(201,168,76,0.7); }}
+
+/* ── Chapter Input Panel ── */
+.input-panel {{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: min(700px, 95vw);
+  max-height: 80vh;
+  background: var(--cream);
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+}}
+.input-panel.open {{
+  opacity: 1;
+  pointer-events: all;
+  transform: translate(-50%, -50%) scale(1);
+}}
+
+.input-panel-header {{
+  background: var(--navy);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}}
+.input-panel-header h3 {{ font-size: 14px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }}
+.panel-close-btn {{
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 4px;
+  transition: all 0.2s;
+}}
+.panel-close-btn:hover {{ background: rgba(255,255,255,0.1); color: white; }}
+
+.panel-tabs {{
+  display: flex;
+  border-bottom: 2px solid rgba(201,168,76,0.2);
+  flex-shrink: 0;
+  background: white;
+}}
+.panel-tab {{
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--gray);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}}
+.panel-tab.active {{ color: var(--navy); border-bottom-color: var(--gold); }}
+
+.panel-body {{ padding: 20px; overflow-y: auto; flex: 1; }}
+
+.panel-tab-content {{ display: none; }}
+.panel-tab-content.active {{ display: block; }}
+
+.panel-label {{
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+  display: block;
+}}
+
+.panel-textarea {{
+  width: 100%;
+  height: 200px;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #2a2218;
+  background: rgba(255,255,255,0.8);
+  resize: vertical;
+}}
+.panel-textarea:focus {{ outline: none; border-color: var(--gold); }}
+
+.pdf-drop-zone {{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px dashed rgba(201,168,76,0.4);
+  border-radius: 10px;
+  padding: 32px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  background: rgba(201,168,76,0.04);
+  margin-bottom: 14px;
+}}
+.pdf-drop-zone:hover {{ border-color: var(--gold); background: rgba(201,168,76,0.08); }}
+.pdf-drop-icon {{ font-size: 36px; }}
+.pdf-drop-label {{ font-size: 12px; color: var(--navy); font-family: Arial, sans-serif; }}
+.pdf-drop-sub {{ font-size: 10px; color: var(--gray); font-family: Arial, sans-serif; }}
+.pdf-drop-zone input[type=file] {{ display: none; }}
+
+.panel-btn {{
+  padding: 10px 24px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  transition: all 0.2s;
+  margin-top: 12px;
+}}
+.panel-btn-primary {{ background: var(--navy); color: var(--gold); }}
+.panel-btn-secondary {{ background: transparent; color: var(--navy); border: 1px solid var(--navy); }}
+.panel-btn:hover {{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }}
+
+.pdf-status {{
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  color: var(--gray);
+  margin-bottom: 8px;
+}}
+
+/* ── FAB ── */
+.fab {{
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  z-index: 100;
+}}
+.fab:hover {{ transform: scale(1.08) rotate(45deg); background: #e8c97a; }}
+.fab-tooltip {{
+  position: fixed;
+  bottom: 84px;
+  right: 20px;
+  background: var(--navy);
+  color: var(--gold);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-family: Arial, sans-serif;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}}
+.fab:hover + .fab-tooltip {{ opacity: 1; }}
+
+/* ── Overlay backdrop ── */
+.panel-backdrop {{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(3px);
+}}
+.panel-backdrop.open {{ opacity: 1; pointer-events: all; }}
+
 /* ── Responsive ── */
-@media(max-width:1000px){
-  :root{--page-w:44vw;--page-h:70vh;--spine:28px}
-}
-@media(max-width:700px){
-  :root{--page-w:92vw;--page-h:auto;--spine:0px}
-  .book-wrap{transform:none;height:auto}
-  .spread{position:relative;flex-direction:column;transform:none !important;opacity:1 !important;pointer-events:all !important;display:none}
-  .spread.active{display:flex}
-  .page{flex:0 0 auto;width:100%;border-radius:8px;margin-bottom:12px;
-    min-height:50vh}
-  .page.full-bleed{flex:0 0 auto;width:100%;min-height:70vh}
-  .spine{display:none}
-  .scene,.book-wrap{width:100%}
-  .input-panel{width:100vw}
-}
+@media (max-width: 900px) {{
+  :root {{
+    --page-w: 300px;
+    --page-h: 420px;
+    --spine-w: 18px;
+  }}
+  .cover-main-title {{ font-size: 38px; }}
+  .cover-subtitle {{ font-size: 16px; }}
+  h1.chapter-title {{ font-size: 20px; }}
+}}
+
+@media (max-width: 640px) {{
+  :root {{
+    --spine-w: 0px;
+    --page-w: calc(50vw - 10px);
+    --page-h: 70vh;
+  }}
+  .spine {{ display: none; }}
+  .page-content {{ padding: 18px 14px; }}
+  .cover-content {{ padding: 20px; }}
+  .cover-main-title {{ font-size: 28px; }}
+}}
+
+/* ── Util ── */
+.mt-8 {{ margin-top: 8px; }}
+.mt-12 {{ margin-top: 12px; }}
+.mt-16 {{ margin-top: 16px; }}
+.text-center {{ text-align: center; }}
+.italic {{ font-style: italic; }}
+.gold-text {{ color: var(--gold); }}
+.navy-text {{ color: var(--navy); }}
+.small {{ font-size: 10px; }}
+
+.estrutura-item {{
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+  align-items: flex-start;
+}}
+.estrutura-ref {{
+  font-size: 9.5px;
+  font-family: Arial, sans-serif;
+  color: var(--gold);
+  font-weight: bold;
+  min-width: 52px;
+  flex-shrink: 0;
+}}
+.estrutura-titulo {{
+  font-size: 10.5px;
+  color: var(--navy);
+}}
+
+.aprender-list {{ list-style: none; }}
+.aprender-item {{
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  font-size: 10.5px;
+  color: #3a3020;
+  line-height: 1.5;
+}}
+.aprender-check {{ color: var(--green); font-size: 12px; flex-shrink: 0; margin-top: 1px; }}
 """
 
-# ─────────────────────────────── SPREADS ────────────────────────────────────
+# ─── SPREAD GENERATORS ────────────────────────────────────────────────────────
+
+def spine_html():
+    return '<div class="spine"><span class="spine-text">Estudo do Evangelho de João</span></div>'
+
+def running_header(side, text):
+    return f'<div class="running-header {side}">{text}</div>'
+
+def page_num(side, n):
+    return f'<div class="page-number {side}">{n}</div>'
 
 def spread_cover(cap):
-    t = cap["titulo"]; sub = cap["subtitulo"]; serie = cap["serie"]
-    tema = cap["tema_geral"]; vk = cap["versiculo_chave"]
-    return f'''<div class="spread active" id="spread-0">
-  <div class="page full-bleed">
-    <div class="cover-inner">
-      {svg_capa_bg()}
-      <div style="position:relative;z-index:2;text-align:center;padding:30px">
-        <div class="cover-serie">{esc(serie)}</div>
-        <div class="cover-book">JOÃO</div>
-        <div class="cover-subtitle">{esc(tema)}</div>
-        <div class="cover-divider"></div>
-        <div class="cover-cap-box">
-          <div class="cover-cap-label">Capítulo</div>
-          <div class="cover-cap-num">{cap["numero"]}</div>
-        </div>
-        <div class="cover-title">{esc(t)}</div>
-        <div style="color:var(--gold);font-size:11px;font-family:Arial;letter-spacing:2px;margin-top:6px;opacity:.7">{esc(sub)}</div>
-        <div class="cover-divider"></div>
-        <div class="cover-verse">&ldquo;{esc(vk["texto"])}&rdquo;</div>
-        <div class="cover-verse-ref">{esc(vk["ref"])}</div>
+    return f'''
+<div class="spread active" id="spread-0">
+  <div class="cover-full">
+    <div class="cover-bg">{svg_cover()}</div>
+    <div class="cover-overlay"></div>
+    <div class="cover-content">
+      <div class="cover-serie">{cap["serie"]}</div>
+      <div class="cover-main-title">JOÃO</div>
+      <div class="cover-chapter">Capítulo {cap["numero"]}</div>
+      <div class="cover-subtitle">{cap["titulo"]}</div>
+      <div class="cover-verse">
+        <em>"{cap["versiculo_chave"]["texto"]}"</em>
+        <div class="cover-verse-ref">{cap["versiculo_chave"]["ref"]}</div>
       </div>
     </div>
   </div>
@@ -966,854 +1480,982 @@ def spread_cover(cap):
 
 def spread_toc(cap):
     toc_items = [
-        ("Panorama do Capítulo","Visão geral e estrutura","2"),
-        ("Personagens Principais","Quem são e o que fazem","3"),
-        ("Contexto Histórico","Período, local e cronologia","4"),
-        ("Estudo por Blocos","João 1:1-51 em 5 blocos","5–7"),
-        ("Síntese Teológica","Grandes temas do capítulo","8"),
-        ("Curiosidades Bíblicas","Detalhes históricos e culturais","9"),
-        ("Aplicação Prática","Como viver o texto hoje","10"),
-        ("Diário de Reflexão","Perguntas para meditação","11"),
-        ("Para Memorizar","Exercício com João 1:1","12"),
-        ("Oração Final","Oração baseada no capítulo","12"),
+        ("📖", "Panorama do Capítulo", 3),
+        ("👥", "Personagens Principais", 4),
+        ("🏛", "Contexto Histórico & Mapa", 5),
+        ("✦", "Bloco 1 — O Verbo Eterno", 6),
+        ("☀", "Bloco 2 — A Luz Veio ao Mundo", 6),
+        ("◈", "Bloco 3 — O Verbo se Fez Carne", 7),
+        ("◎", "Bloco 4 — O Cordeiro de Deus", 8),
+        ("⟡", "Bloco 5 — Os Primeiros Discípulos", 8),
+        ("✦", "Síntese Teológica", 9),
+        ("💡", "Curiosidades Bíblicas", 10),
+        ("🎯", "Aplicação & Desafio da Semana", 11),
+        ("📝", "Diário de Reflexão", 12),
+        ("🧠", "Memorização & Oração Final", 13),
     ]
     items_html = ""
-    for i,(title,ref,pg) in enumerate(toc_items):
-        items_html += f'''<div class="toc-item" onclick="goSpread({i+2})">
-    <div class="toc-num">{i+1}</div>
-    <div class="toc-text">
-      <div class="toc-spread">{esc(title)}</div>
-      <div class="toc-ref">{esc(ref)}</div>
-    </div>
-    <div class="toc-arrow">›</div>
-  </div>'''
+    for i, (icon, label, pg) in enumerate(toc_items):
+        items_html += f'''
+      <div class="toc-item" onclick="book.goTo({i+1})">
+        <div class="toc-num">{icon}</div>
+        <span class="toc-label">{label}</span>
+        <span class="toc-dots"></span>
+        <span class="toc-page-n">{pg}</span>
+      </div>'''
 
-    learns = cap["aprendemos_sobre_jesus"]
-    learns_html = "".join(f'<div class="learn-item"><span class="learn-check">✓</span><span>{esc(l)}</span></div>' for l in learns)
-
-    return f'''<div class="spread" id="spread-1">
-  <div class="page left">
-    <div class="sec-head">📖 Sumário Interativo</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">{items_html}</div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head green">✝ O Que Aprendemos Sobre Jesus?</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      {learns_html}
-      <div style="margin-top:18px;padding:14px;background:linear-gradient(135deg,var(--navy),#2a3f6e);border-radius:8px;color:white">
-        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-family:Arial;font-weight:bold">Versículo-chave</div>
-        <div style="font-size:12px;line-height:1.65;margin-top:8px;font-style:italic">&ldquo;{esc(cap["versiculo_chave"]["texto"])}&rdquo;</div>
-        <div style="text-align:right;color:var(--gold);font-size:10px;font-family:Arial;margin-top:8px">{esc(cap["versiculo_chave"]["ref"])}</div>
+    return f'''
+<div class="spread" id="spread-1">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-top:60px;">
+      <div style="width:100%;max-width:280px;">
+        {svg_open_book()}
       </div>
-    </div></div>
+      <div style="margin-top:24px;">
+        <div class="cover-serie" style="display:inline-block;background:rgba(26,39,68,0.1);border:1px solid rgba(201,168,76,0.4);color:{NAVY};padding:4px 16px;border-radius:20px;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;margin-bottom:12px;">{cap["serie"]}</div>
+        <h1 class="chapter-title" style="font-size:24px;margin-bottom:4px;">{cap["titulo"]}</h1>
+        <p style="font-size:12px;color:{GRAY};font-family:Arial,sans-serif;">{cap["subtitulo"]}</p>
+        <hr class="gold-divider" style="margin-top:16px;">
+        <p class="body-text" style="font-size:10px;color:{GRAY};font-style:italic;margin-top:10px;">{cap["tema_geral"]}</p>
+      </div>
+    </div>
+    {page_num("left", "ii")}
+  </div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Sumário")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">📋</div>
+        <div class="page-title">Sumário</div>
+      </div>
+      {items_html}
+    </div>
+    {page_num("right", "iii")}
   </div>
 </div>'''
 
 def spread_panorama(cap):
-    pan = cap["panorama"]
-    temas_html = "".join(f'<span class="panorama-tag">{esc(t)}</span>' for t in pan["temas"])
+    p = cap["panorama"]
+    temas_html = "".join(f'<span class="tag">{t}</span>' for t in p["temas"])
     estrutura_html = ""
-    for e in pan["estrutura"]:
-        estrutura_html += f'''<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #e8e2d8;align-items:flex-start">
-  <div style="background:var(--navy);color:var(--gold);padding:3px 8px;border-radius:4px;font-size:9.5px;font-family:Arial;font-weight:bold;flex-shrink:0;margin-top:1px">{esc(e["ref"])}</div>
-  <div style="font-size:12px;color:var(--navy);line-height:1.4">{esc(e["titulo"])}</div>
-</div>'''
-    return f'''<div class="spread" id="spread-2">
-  <div class="page left">
-    <div class="sec-head">📖 Panorama do Capítulo</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <p style="font-size:11.5px;color:#444;line-height:1.7;margin-bottom:14px">{esc(pan["texto"])}</p>
-      <div style="margin-bottom:14px">
-        <div style="font-size:10px;font-weight:bold;color:var(--navy);font-family:Arial;letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase">Temas do Capítulo</div>
-        {temas_html}
+    for e in p["estrutura"]:
+        estrutura_html += f'''
+      <div class="estrutura-item">
+        <span class="estrutura-ref">{e["ref"]}</span>
+        <span class="estrutura-titulo">{e["titulo"]}</span>
+      </div>'''
+
+    return f'''
+<div class="spread" id="spread-2">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">📖</div>
+        <div class="page-title">Panorama do Capítulo</div>
       </div>
-    </div></div>
+      <p class="body-text">{p["texto"]}</p>
+      <hr class="gold-divider">
+      <h3 class="subsection-title">Temas Principais</h3>
+      <div class="tag-list">{temas_html}</div>
+    </div>
+    {page_num("left", "1")}
   </div>
-  <div class="page right">
-    <div class="sec-head">📋 Estrutura</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      {estrutura_html}
-      <div style="margin-top:16px;padding:14px;background:#fff8e7;border-radius:8px;border-left:3px solid var(--gold)">
-        <div style="font-size:10px;font-weight:bold;color:var(--navy);font-family:Arial;text-transform:uppercase;letter-spacing:.5px">Propósito de João</div>
-        <p style="font-size:11.5px;color:#444;line-height:1.6;margin-top:8px;font-style:italic">&ldquo;Estas coisas foram escritas para que vocês creiam que Jesus é o Cristo, o Filho de Deus, e que, crendo, tenham vida em seu nome.&rdquo;</p>
-        <div style="text-align:right;color:var(--gold);font-size:10px;font-family:Arial;margin-top:6px">João 20:31</div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Panorama")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">🗂</div>
+        <div class="page-title">Estrutura do Capítulo</div>
       </div>
-    </div></div>
+      {estrutura_html}
+      <hr class="gold-divider">
+      <div class="verse-quote">
+        "{cap["versiculo_chave"]["texto"]}"
+        <div class="verse-ref">{cap["versiculo_chave"]["ref"]}</div>
+      </div>
+      <div style="margin-top:16px;border-radius:8px;overflow:hidden;">
+        {svg_cosmos()}
+      </div>
+    </div>
+    {page_num("right", "2")}
   </div>
 </div>'''
 
 def spread_personagens(cap):
     chars = cap["personagens"]
-    def char_card(c):
-        return f'''<div class="char-card">
-  <div class="char-head" style="background:{c["cor"]}">
-    <div class="char-avatar">{esc(c["inicial"])}</div>
-    <div>
-      <div class="char-nome">{esc(c["nome"])}</div>
-      <div class="char-titulo">{esc(c["titulo"])}</div>
+    def char_html(c):
+        return f'''
+    <div class="character-card">
+      <div class="char-avatar" style="background:{c["cor"]};">{c["inicial"]}</div>
+      <div>
+        <div class="char-name">{c["nome"]}</div>
+        <div class="char-role">{c["titulo"]}</div>
+        <div class="char-desc">{c["descricao"]}</div>
+        <div class="char-verse">{c["versiculo"]}</div>
+      </div>
+    </div>'''
+
+    return f'''
+<div class="spread" id="spread-3">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">👥</div>
+        <div class="page-title">Personagens Principais</div>
+      </div>
+      {char_html(chars[0])}
+      {char_html(chars[1])}
     </div>
+    {page_num("left", "3")}
   </div>
-  <div class="char-body">
-    {esc(c["descricao"])}
-    <div class="char-verse">{esc(c["versiculo"])}</div>
-  </div>
-</div>'''
-    return f'''<div class="spread" id="spread-3">
-  <div class="page left">
-    <div class="sec-head">👥 Personagens Principais</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">
-      {char_card(chars[0])}
-      {char_card(chars[1])}
-    </div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head">👥 Personagens Principais</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">
-      {char_card(chars[2])}
-      {char_card(chars[3])}
-    </div></div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Personagens")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">👥</div>
+        <div class="page-title">Personagens Principais</div>
+      </div>
+      {char_html(chars[2])}
+      {char_html(chars[3])}
+      <hr class="gold-divider">
+      <div class="verse-quote" style="margin-top:8px;">
+        "Eis o Cordeiro de Deus, que tira o pecado do mundo!"
+        <div class="verse-ref">João 1:29</div>
+      </div>
+    </div>
+    {page_num("right", "4")}
   </div>
 </div>'''
 
-def spread_contexto(cap):
+def spread_contexto_mapa(cap):
     ctx = cap["contexto"]
-    marcos_html = ""
+    timeline_html = ""
     for m in ctx["marcos"]:
-        marcos_html += f'''<div class="tl-item">
-  <div class="tl-dot"></div>
-  <div class="tl-year">{esc(m["ano"])}</div>
-  <div class="tl-event">{esc(m["evento"])}</div>
-</div>'''
-    return f'''<div class="spread" id="spread-4">
-  <div class="page left">
-    <div class="sec-head">📜 Contexto Histórico</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <div style="background:#fff8e7;border-radius:6px;padding:8px 12px;font-size:10px;font-family:Arial;color:var(--gray);margin-bottom:12px">
-        ⏱ {esc(ctx["periodo"])}
+        timeline_html += f'''
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">{m["ano"]}</div>
+        <div class="timeline-event">{m["evento"]}</div>
+      </div>'''
+
+    return f'''
+<div class="spread" id="spread-4">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">🏛</div>
+        <div class="page-title">Contexto Histórico</div>
       </div>
-      <p style="font-size:11.5px;color:#444;line-height:1.7;margin-bottom:16px">{esc(ctx["texto"])}</p>
-      <div style="font-size:10px;font-weight:bold;color:var(--navy);font-family:Arial;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📍 {esc(ctx["local"])}</div>
-    </div></div>
+      <p style="font-size:9.5px;color:{GRAY};font-family:Arial,sans-serif;margin-bottom:8px;">{ctx["periodo"]}</p>
+      <p class="body-text">{ctx["texto"]}</p>
+      <p class="body-text small italic" style="color:{GRAY};">{ctx["local"]}</p>
+    </div>
+    {page_num("left", "5")}
   </div>
-  <div class="page right">
-    <div class="sec-head">⏳ Linha do Tempo</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <div class="timeline">{marcos_html}</div>
-      <div style="margin-top:16px">
-        <div class="sec-head" style="border-radius:4px;margin-bottom:8px">🗺 Local em Destaque</div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Linha do Tempo & Mapa")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">🗺</div>
+        <div class="page-title">Local em Destaque</div>
+      </div>
+      <div style="border-radius:8px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
         {svg_map()}
       </div>
-    </div></div>
+      <div class="page-header" style="margin-top:12px;">
+        <div class="section-icon">⏳</div>
+        <div class="page-title">Linha do Tempo</div>
+      </div>
+      <div class="timeline">
+        {timeline_html}
+      </div>
+    </div>
+    {page_num("right", "6")}
   </div>
 </div>'''
 
-def spread_blocos_12(cap):
-    b = cap["blocos"]
-    def flip(bloco, i):
-        clr = bloco["cor"]
-        txt_short = bloco["texto"][:280] + ("…" if len(bloco["texto"])>280 else "")
-        return f'''<div class="flip-card" id="flip-{i}" onclick="this.classList.toggle('flipped')" style="flex:1;min-height:260px">
-  <div class="flip-inner">
-    <div class="flip-front" style="background:{clr}">
-      <div class="flip-front-inner">
-        <div class="flip-num">{bloco["num"]}</div>
-        <div class="flip-ref">{esc(bloco["ref"])}</div>
-        <div class="flip-title">{esc(bloco["titulo"])}</div>
-        <div class="flip-text">&ldquo;{esc(txt_short)}&rdquo;</div>
-        <div class="flip-hint">▣ Toque para revelar o aprendizado</div>
+def bloco_face(b, svg_fn):
+    side = "left" if b["num"] % 2 == 1 else "right"
+    ref = b["ref"]
+    header_ref = "João " + (ref.split(":")[1] if ":" in ref else ref)
+    return f'''
+  <div class="flip-face">
+    {running_header(side, header_ref)}
+    <div class="bloco-header">
+      <div class="bloco-num" style="background:{b['cor']};">{b["num"]}</div>
+      <div>
+        <div class="bloco-ref">{ref}</div>
+        <div class="bloco-title">{b["titulo"]}</div>
       </div>
     </div>
-    <div class="flip-back">
-      <div class="flip-back-inner">
-        <div class="flip-back-label">Aprendizado</div>
-        <div class="flip-back-title">{esc(bloco["aprendizado_titulo"])}</div>
-        <div class="flip-back-text">{esc(bloco["aprendizado"])}</div>
-        <div class="flip-back-hint">▣ Toque para voltar ao texto</div>
+    <div class="bloco-img">{svg_fn()}</div>
+    <div class="bloco-text">{b["texto"][:280]}...</div>
+    <button class="flip-btn flip-btn-reveal" onclick="flipCard(this)">Revelar Aprendizado ↻</button>
+    {page_num(side, str(5 + b["num"]))}
+  </div>'''
+
+def bloco_back(b):
+    return f'''
+  <div class="flip-back">
+    <div class="bloco-header">
+      <div class="bloco-num" style="background:rgba(201,168,76,0.3);">{b["num"]}</div>
+      <div>
+        <div class="bloco-ref" style="color:rgba(201,168,76,0.7);">{b["ref"]}</div>
+        <div class="bloco-title-back">{b["aprendizado_titulo"]}</div>
+      </div>
+    </div>
+    <hr style="border:none;height:1px;background:rgba(201,168,76,0.3);margin:12px 0;">
+    <p class="learning-text">{b["aprendizado"]}</p>
+    <div class="verse-quote" style="border-color:rgba(201,168,76,0.5);background:rgba(255,255,255,0.05);">
+      <span style="color:rgba(255,255,255,0.8);font-size:10.5px;">{b["texto"][:180]}...</span>
+      <div class="verse-ref" style="color:rgba(201,168,76,0.7);">{b["ref"]}</div>
+    </div>
+    <button class="flip-btn flip-btn-back" onclick="flipCard(this)">← Voltar ao Versículo</button>
+  </div>'''
+
+SVG_FOR_BLOCO = [svg_cosmos, svg_light_dark, svg_incarnation, svg_lamb, svg_disciples]
+
+def spread_blocos_1_2(cap):
+    b1, b2 = cap["blocos"][0], cap["blocos"][1]
+    return f'''
+<div class="spread" id="spread-5">
+  <div class="page page-left">
+    <div class="flip-card">
+      <div class="flip-inner" id="flip-1">
+        {bloco_face(b1, SVG_FOR_BLOCO[0])}
+        {bloco_back(b1)}
       </div>
     </div>
   </div>
-</div>'''
-    return f'''<div class="spread" id="spread-5">
-  <div class="page left">
-    <div class="sec-head">📖 Bloco 1 — {esc(b[0]["ref"])}</div>
-    <div class="pg-scroll"><div class="pg-pad" style="height:calc(100% - 34px);display:flex;flex-direction:column">
-      {flip(b[0],0)}
-    </div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head">📖 Bloco 2 — {esc(b[1]["ref"])}</div>
-    <div class="pg-scroll"><div class="pg-pad" style="height:calc(100% - 34px);display:flex;flex-direction:column">
-      {flip(b[1],1)}
-    </div></div>
+  {spine_html()}
+  <div class="page page-right">
+    <div class="flip-card">
+      <div class="flip-inner" id="flip-2">
+        {bloco_face(b2, SVG_FOR_BLOCO[1])}
+        {bloco_back(b2)}
+      </div>
+    </div>
   </div>
 </div>'''
 
-def spread_bloco3(cap):
-    b = cap["blocos"][2]
-    clr = b["cor"]
-    return f'''<div class="spread" id="spread-6">
-  <div class="page left">
-    <div class="sec-head gold">✦ Versículo Chave</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <div style="position:relative;height:220px;border-radius:8px;overflow:hidden;margin-bottom:14px">
-        {svg_cosmos()}
-        <div style="position:relative;z-index:2;padding:20px;height:100%;display:flex;flex-direction:column;justify-content:flex-end">
-          <div style="color:var(--gold);font-size:10px;font-family:Arial;letter-spacing:1.5px;text-transform:uppercase">Encarnação</div>
-          <div style="color:white;font-size:15px;line-height:1.5;margin-top:6px;font-style:italic">&ldquo;E o Verbo se fez carne e habitou entre nós&rdquo;</div>
-          <div style="color:var(--gold);font-size:10px;font-family:Arial;margin-top:6px">João 1:14</div>
+def spread_bloco_3(cap):
+    b3 = cap["blocos"][2]
+    jesus_items = cap["aprendemos_sobre_jesus"]
+    items_html = "".join(
+        f'<li class="aprender-item"><span class="aprender-check">✓</span>{it}</li>'
+        for it in jesus_items
+    )
+    return f'''
+<div class="spread" id="spread-6">
+  <div class="page page-left">
+    {running_header("left", "Estudo por Blocos")}
+    <div class="page-content" style="padding:0;display:flex;flex-direction:column;">
+      <div style="background:{NAVY};padding:24px;flex:1;">
+        <div style="font-size:10px;color:{GOLD};font-family:Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">O que aprendemos sobre Jesus?</div>
+        <ul class="aprender-list">{items_html}</ul>
+      </div>
+      <div style="padding:20px;background:rgba(245,240,232,0.95);">
+        <div class="verse-quote">
+          "E o Verbo se fez carne e habitou entre nós."
+          <div class="verse-ref">João 1:14</div>
         </div>
       </div>
-      <p style="font-size:11.5px;color:#444;line-height:1.7">
-        A encarnação é o maior milagre da história: o Criador infinito tornou-se criatura finita.
-        Deus não apenas falou <em>sobre</em> o amor — Ele <em>veio</em> em amor.
-        O Verbo não se disfarçou de humano; Ele <em>se tornou</em> plenamente humano.
-      </p>
-    </div></div>
+    </div>
+    {page_num("left", "9")}
   </div>
-  <div class="page right">
-    <div class="sec-head" style="background:{clr}">📖 Bloco 3 — {esc(b["ref"])}</div>
-    <div class="pg-scroll"><div class="pg-pad" style="height:calc(100% - 34px);display:flex;flex-direction:column">
-      <div class="flip-card" id="flip-2" onclick="this.classList.toggle('flipped')" style="flex:1">
-        <div class="flip-inner">
-          <div class="flip-front" style="background:{clr}">
-            <div class="flip-front-inner">
-              <div class="flip-num">{b["num"]}</div>
-              <div class="flip-ref">{esc(b["ref"])}</div>
-              <div class="flip-title">{esc(b["titulo"])}</div>
-              <div class="flip-text">&ldquo;{esc(b["texto"][:280])}…&rdquo;</div>
-              <div class="flip-hint">▣ Toque para revelar o aprendizado</div>
-            </div>
-          </div>
-          <div class="flip-back">
-            <div class="flip-back-inner">
-              <div class="flip-back-label">Aprendizado</div>
-              <div class="flip-back-title">{esc(b["aprendizado_titulo"])}</div>
-              <div class="flip-back-text">{esc(b["aprendizado"])}</div>
-              <div class="flip-back-hint">▣ Toque para voltar ao texto</div>
-            </div>
-          </div>
-        </div>
+  {spine_html()}
+  <div class="page page-right">
+    <div class="flip-card">
+      <div class="flip-inner" id="flip-3">
+        {bloco_face(b3, SVG_FOR_BLOCO[2])}
+        {bloco_back(b3)}
       </div>
-    </div></div>
+    </div>
   </div>
 </div>'''
 
-def spread_blocos_45(cap):
-    b = cap["blocos"]
-    def flip(bloco, idx):
-        clr = bloco["cor"]
-        return f'''<div class="flip-card" id="flip-{idx}" onclick="this.classList.toggle('flipped')" style="flex:1;min-height:260px">
-  <div class="flip-inner">
-    <div class="flip-front" style="background:{clr}">
-      <div class="flip-front-inner">
-        <div class="flip-num">{bloco["num"]}</div>
-        <div class="flip-ref">{esc(bloco["ref"])}</div>
-        <div class="flip-title">{esc(bloco["titulo"])}</div>
-        <div class="flip-text">&ldquo;{esc(bloco["texto"][:260])}…&rdquo;</div>
-        <div class="flip-hint">▣ Toque para revelar o aprendizado</div>
-      </div>
-    </div>
-    <div class="flip-back">
-      <div class="flip-back-inner">
-        <div class="flip-back-label">Aprendizado</div>
-        <div class="flip-back-title">{esc(bloco["aprendizado_titulo"])}</div>
-        <div class="flip-back-text">{esc(bloco["aprendizado"])}</div>
-        <div class="flip-back-hint">▣ Toque para voltar ao texto</div>
+def spread_blocos_4_5(cap):
+    b4, b5 = cap["blocos"][3], cap["blocos"][4]
+    return f'''
+<div class="spread" id="spread-7">
+  <div class="page page-left">
+    <div class="flip-card">
+      <div class="flip-inner" id="flip-4">
+        {bloco_face(b4, SVG_FOR_BLOCO[3])}
+        {bloco_back(b4)}
       </div>
     </div>
   </div>
-</div>'''
-    return f'''<div class="spread" id="spread-7">
-  <div class="page left">
-    <div class="sec-head">📖 Bloco 4 — {esc(b[3]["ref"])}</div>
-    <div class="pg-scroll"><div class="pg-pad" style="height:calc(100% - 34px);display:flex;flex-direction:column">
-      {flip(b[3],3)}
-    </div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head">📖 Bloco 5 — {esc(b[4]["ref"])}</div>
-    <div class="pg-scroll"><div class="pg-pad" style="height:calc(100% - 34px);display:flex;flex-direction:column">
-      {flip(b[4],4)}
-    </div></div>
+  {spine_html()}
+  <div class="page page-right">
+    <div class="flip-card">
+      <div class="flip-inner" id="flip-5">
+        {bloco_face(b5, SVG_FOR_BLOCO[4])}
+        {bloco_back(b5)}
+      </div>
+    </div>
   </div>
 </div>'''
 
 def spread_sintese(cap):
-    syn = cap["sintese"]["temas"]
-    def sc(t):
-        return f'''<div class="syn-card">
-  <div class="syn-head" style="background:{t["cor"]}">
-    <div class="syn-icon">{t["icone"]}</div>
-    <div class="syn-title">{esc(t["titulo"])}</div>
+    temas = cap["sintese"]["temas"]
+    def tema_card(t):
+        return f'''
+      <div class="tema-card" style="background:rgba(0,0,0,0.04);border-left:4px solid {t["cor"]};">
+        <div class="tema-icon">{t["icone"]}</div>
+        <div class="tema-title" style="color:{t["cor"]};">{t["titulo"]}</div>
+        <div class="tema-text">{t["texto"]}</div>
+      </div>'''
+
+    return f'''
+<div class="spread" id="spread-8">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">✦</div>
+        <div class="page-title">Síntese Teológica</div>
+      </div>
+      {tema_card(temas[0])}
+      {tema_card(temas[1])}
+    </div>
+    {page_num("left", "11")}
   </div>
-  <div class="syn-body">{esc(t["texto"])}</div>
-</div>'''
-    return f'''<div class="spread" id="spread-8">
-  <div class="page left">
-    <div class="sec-head">✦ Síntese Teológica</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">{sc(syn[0])}{sc(syn[1])}</div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head">✦ Síntese Teológica</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">{sc(syn[2])}{sc(syn[3])}</div></div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Síntese Teológica")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">✦</div>
+        <div class="page-title">Síntese Teológica</div>
+      </div>
+      {tema_card(temas[2])}
+      {tema_card(temas[3])}
+      <hr class="gold-divider">
+      <div class="verse-quote">
+        "A todos quantos o receberam, deu-lhes o poder de serem feitos filhos de Deus."
+        <div class="verse-ref">João 1:12</div>
+      </div>
+    </div>
+    {page_num("right", "12")}
   </div>
 </div>'''
 
 def spread_curiosidades(cap):
-    curs = cap["curiosidades"]
-    def cc(c):
-        return f'''<div class="cur-card">
-  <div class="cur-head">
-    <div class="cur-icon">{c["icone"]}</div>
-    <div class="cur-title">{esc(c["titulo"])}</div>
+    curios = cap["curiosidades"]
+    def curio_card(c):
+        return f'''
+      <div class="curiosidade-card">
+        <div class="curio-icon">{c["icone"]}</div>
+        <div>
+          <div class="curio-title">{c["titulo"]}</div>
+          <div class="curio-text">{c["texto"]}</div>
+        </div>
+      </div>'''
+
+    return f'''
+<div class="spread" id="spread-9">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">💡</div>
+        <div class="page-title">Curiosidades Bíblicas</div>
+      </div>
+      {curio_card(curios[0])}
+      {curio_card(curios[1])}
+    </div>
+    {page_num("left", "13")}
   </div>
-  <div class="cur-body">{esc(c["texto"])}</div>
-</div>'''
-    return f'''<div class="spread" id="spread-9">
-  <div class="page left">
-    <div class="sec-head purple">💡 Curiosidades Bíblicas</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">{cc(curs[0])}{cc(curs[1])}</div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head purple">💡 Curiosidades Bíblicas</div>
-    <div class="pg-scroll"><div class="pg-pad-sm">{cc(curs[2])}{cc(curs[3])}</div></div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Curiosidades Bíblicas")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">💡</div>
+        <div class="page-title">Curiosidades Bíblicas</div>
+      </div>
+      {curio_card(curios[2])}
+      {curio_card(curios[3])}
+    </div>
+    {page_num("right", "14")}
   </div>
 </div>'''
 
-def spread_aplicacao(cap):
-    app = cap["aplicacao"]["pontos"]
-    des = cap["desafio"]
-    app_html = ""
-    for p in app:
-        app_html += f'''<div class="app-item">
-  <div class="app-num" style="background:{NAVY}">{p["num"]}</div>
-  <div class="app-content">
-    <div class="app-title">{esc(p["titulo"])}</div>
-    <div class="app-text">{esc(p["texto"])}</div>
+def spread_aplicacao_desafio(cap):
+    aplic = cap["aplicacao"]
+    desaf = cap["desafio"]
+    def aplic_item(p):
+        return f'''
+      <div class="aplicacao-item">
+        <div class="aplic-num" style="background:{NAVY};">{p["num"]}</div>
+        <div>
+          <div class="aplic-title">{p["titulo"]}</div>
+          <div class="aplic-text">{p["texto"]}</div>
+        </div>
+      </div>'''
+
+    tarefas_html = "".join(
+        f'<div class="desafio-item"><span class="desafio-check">☐</span><span class="desafio-text">{t}</span></div>'
+        for t in desaf["tarefas"]
+    )
+    aplic_html = "".join(aplic_item(p) for p in aplic["pontos"])
+
+    return f'''
+<div class="spread" id="spread-10">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">🎯</div>
+        <div class="page-title">Aplicação Prática</div>
+      </div>
+      {aplic_html}
+    </div>
+    {page_num("left", "15")}
   </div>
-</div>'''
-    tasks_html = ""
-    for i,t in enumerate(des["tarefas"]):
-        tasks_html += f'''<div class="challenge-item">
-  <div class="challenge-check" onclick="this.classList.toggle('done')" title="Marcar como concluído">✓</div>
-  <div class="challenge-text">{esc(t)}</div>
-</div>'''
-    return f'''<div class="spread" id="spread-10">
-  <div class="page left">
-    <div class="sec-head">🎯 Aplicação Prática</div>
-    <div class="pg-scroll"><div class="pg-pad">{app_html}</div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head orange">🚩 Desafio da Semana</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <p style="font-size:11.5px;color:#444;line-height:1.65;margin-bottom:14px">{esc(des["descricao"])}</p>
-      {tasks_html}
-    </div></div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Desafio da Semana")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">🏁</div>
+        <div class="page-title">Desafio da Semana</div>
+      </div>
+      <div class="desafio-card">
+        <div class="desafio-title">🏁 {desaf["titulo"]}</div>
+        <div class="desafio-desc">{desaf["descricao"]}</div>
+        {tarefas_html}
+      </div>
+    </div>
+    {page_num("right", "16")}
   </div>
 </div>'''
 
 def spread_diario(cap):
-    qs = cap["reflexao"]["perguntas"]
-    def qa(q, idx):
-        key = f"joao_cap1_q{idx}"
-        return f'''<div class="reflection-q">
-  <div class="q-label">
-    <div class="q-num">{idx+1}</div>
-    {esc(q)}
+    perguntas = cap["reflexao"]["perguntas"]
+    def q_html(i, q):
+        return f'''
+      <div class="reflection-q">
+        <div class="q-num">Pergunta {i+1}</div>
+        <div class="q-text">{q}</div>
+        <textarea class="q-textarea" id="q{i}" placeholder="Escreva aqui suas reflexões..." oninput="diary.save({i}, this.value)"></textarea>
+        <div class="autosave-badge" id="saved-{i}">● salvo automaticamente</div>
+      </div>'''
+
+    return f'''
+<div class="spread" id="spread-11">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">📝</div>
+        <div class="page-title">Diário de Reflexão</div>
+      </div>
+      {q_html(0, perguntas[0])}
+      {q_html(1, perguntas[1])}
+      {q_html(2, perguntas[2])}
+    </div>
+    {page_num("left", "17")}
   </div>
-  <textarea class="q-textarea" data-key="{key}" placeholder="Escreva sua reflexão..." rows="3" oninput="saveDiary(this)">{"{}"}</textarea>
-</div>'''
-    left = "".join(qa(qs[i],i) for i in range(3))
-    right = "".join(qa(qs[i],i) for i in range(3,6))
-    return f'''<div class="spread" id="spread-11">
-  <div class="page left">
-    <div class="sec-head">✏ Diário de Reflexão</div>
-    <div class="pg-scroll"><div class="pg-pad" id="diary-left">{left}</div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head">✏ Diário de Reflexão</div>
-    <div class="pg-scroll"><div class="pg-pad" id="diary-right">{right}</div></div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Diário de Reflexão")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">📝</div>
+        <div class="page-title">Diário de Reflexão</div>
+      </div>
+      {q_html(3, perguntas[3])}
+      {q_html(4, perguntas[4])}
+      {q_html(5, perguntas[5])}
+      <div style="margin-top:10px;text-align:right;">
+        <button onclick="diary.exportTxt()" style="background:none;border:1px solid {GRAY};color:{GRAY};padding:5px 12px;border-radius:12px;font-size:10px;cursor:pointer;font-family:Arial,sans-serif;">⬇ Exportar respostas</button>
+      </div>
+    </div>
+    {page_num("right", "18")}
   </div>
 </div>'''
 
-def spread_memoria(cap):
+def spread_memoria_oracao(cap):
     mem = cap["memoria"]
     words = mem["texto"].split()
     blanks = set(mem["blanks_idx"])
     verse_html = ""
+    input_idx = 0
     for i, w in enumerate(words):
         if i in blanks:
-            clean = w.rstrip(",.")
-            verse_html += f'<input class="mem-blank" id="mb-{i}" data-answer="{esc(clean.lower())}" placeholder="___" autocomplete="off"> '
+            verse_html += f'<input class="memory-input" id="mi-{input_idx}" data-answer="{w.lower()}" placeholder="___" autocomplete="off"> '
+            input_idx += 1
         else:
-            verse_html += esc(w) + " "
+            verse_html += f'<span>{w} </span>'
+
     oracao = cap["oracao"]
-    return f'''<div class="spread" id="spread-12">
-  <div class="page left">
-    <div class="sec-head gold">📝 Para Memorizar</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <div style="background:var(--navy);border-radius:8px;padding:16px;margin-bottom:14px;text-align:center">
-        <div style="font-size:9px;color:var(--gold);letter-spacing:2px;font-family:Arial;text-transform:uppercase">Versículo da Semana</div>
-        <div style="color:var(--gold);font-size:22px;margin:6px 0">❝</div>
-        <div style="color:rgba(255,255,255,0.9);font-size:12px;font-style:italic;line-height:1.7">{esc(mem["texto"])}</div>
-        <div style="color:var(--gold);font-size:11px;font-family:Arial;margin-top:8px">{esc(mem["ref"])}</div>
-      </div>
-      <div style="font-size:11px;color:var(--navy);font-family:Arial;font-weight:bold;margin-bottom:10px">
-        Complete as lacunas:
-      </div>
-      <div class="memory-verse">{verse_html}</div>
-      <div class="mem-ref">{esc(mem["ref"])}</div>
-      <div class="mem-btns">
-        <button class="mem-btn check" onclick="checkMemory()">Verificar</button>
-        <button class="mem-btn reveal" onclick="revealMemory()">Revelar</button>
-        <button class="mem-btn reveal" onclick="resetMemory()">Reiniciar</button>
-      </div>
-      <div id="mem-result" class="mem-result"></div>
-    </div></div>
-  </div>
-  <div class="page right">
-    <div class="sec-head">🙏 Oração Final</div>
-    <div class="pg-scroll"><div class="pg-pad">
-      <div class="prayer-box">
-        <div class="prayer-quote">&ldquo;</div>
-        <div class="prayer-text">{esc(oracao["texto"])}</div>
-        <div class="prayer-amen">— Amém</div>
-      </div>
-      <div style="margin-top:16px;padding:14px;background:#f0fdf4;border-radius:8px;border:1px solid #86efac">
-        <div style="font-size:10px;font-weight:bold;color:var(--green);font-family:Arial;text-transform:uppercase;letter-spacing:.5px">Próximos Passos</div>
-        <ul style="margin-top:8px;padding-left:16px;font-size:11.5px;color:#444;line-height:1.7">
-          <li>Leia João capítulo 2 na próxima semana</li>
-          <li>Compartilhe sua maior descoberta com alguém</li>
-          <li>Ore usando o versículo que você memorizou</li>
-          <li>Traga suas reflexões para o grupo</li>
-        </ul>
-      </div>
-    </div></div>
-  </div>
-</div>'''
 
-def spread_contracapa(cap):
-    return f'''<div class="spread" id="spread-13">
-  <div class="page full-bleed">
-    <div class="back-cover">
-      {svg_capa_bg()}
-      <div style="position:relative;z-index:2;text-align:center;padding:40px">
-        <div style="color:var(--gold);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-family:Arial;margin-bottom:20px">{esc(cap["serie"])}</div>
-        <div style="color:rgba(255,255,255,0.5);font-size:13px;font-family:Arial;margin-bottom:30px">Capítulo {cap["numero"]} concluído!</div>
-        <div style="color:white;font-size:18px;margin-bottom:30px;font-style:italic">&ldquo;Coisas maiores do que estas verás.&rdquo;<br><span style="font-size:12px;color:var(--gold);font-style:normal">João 1:50</span></div>
-        <div class="bc-next">
-          <div class="bc-next-label">Próximo Capítulo</div>
-          <div class="bc-next-title">O Primeiro Milagre</div>
-          <div class="bc-next-ref">João 2:1-25 — As Bodas de Caná</div>
+    return f'''
+<div class="spread" id="spread-12">
+  <div class="page page-left">
+    {running_header("left", "Evangelho de João · Cap. 1")}
+    <div class="page-content" style="padding-top:36px;">
+      <div class="page-header">
+        <div class="section-icon">🧠</div>
+        <div class="page-title">Para Memorizar</div>
+      </div>
+      <div class="verse-quote" style="font-size:12px;line-height:1.8;text-align:center;border:none;background:rgba(201,168,76,0.08);border-radius:8px;padding:16px;">
+        <div style="font-size:10px;color:{GRAY};font-family:Arial,sans-serif;margin-bottom:8px;">Complete as lacunas:</div>
+        <div class="memory-verse-text" style="font-size:13px;">
+          {verse_html}
         </div>
-        <div style="color:rgba(255,255,255,0.4);font-size:10px;font-family:Arial;margin-top:30px;letter-spacing:1px">ESTUDO BÍBLICO INTERATIVO</div>
+        <div class="verse-ref">{mem["ref"]}</div>
       </div>
+      <div class="memory-actions">
+        <button class="memory-btn memory-btn-check" onclick="memory.check()">Verificar</button>
+        <button class="memory-btn memory-btn-reveal" onclick="memory.reveal()">Revelar</button>
+        <button class="memory-btn memory-btn-reset" onclick="memory.reset()">Limpar</button>
+      </div>
+      <div class="memory-feedback" id="memory-feedback"></div>
+    </div>
+    {page_num("left", "19")}
+  </div>
+  {spine_html()}
+  <div class="page page-right">
+    {running_header("right", "Oração Final")}
+    <div class="page-content" style="padding-top:36px;display:flex;flex-direction:column;justify-content:center;">
+      <div class="page-header">
+        <div class="section-icon">🙏</div>
+        <div class="page-title">Oração Final</div>
+      </div>
+      <div class="prayer-box">
+        <div class="prayer-title">🙏 {oracao["titulo"]}</div>
+        <div class="prayer-text">"{oracao["texto"]}"</div>
+      </div>
+      <div style="margin-top:20px;text-align:center;">
+        <div style="font-size:9px;color:{GRAY};font-family:Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">Amém</div>
+      </div>
+    </div>
+    {page_num("right", "20")}
+  </div>
+</div>'''
+
+def spread_back_cover(cap):
+    return f'''
+<div class="spread" id="spread-13">
+  <div class="back-cover-full">
+    <div class="back-cover-content">
+      <div style="font-size:48px;margin-bottom:20px;opacity:0.3;">✝</div>
+      <div style="width:60px;height:1px;background:{GOLD};margin:0 auto 20px;opacity:0.5;"></div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;max-width:400px;line-height:1.8;margin-bottom:30px;">
+        "Estas coisas foram escritas para que vocês creiam que Jesus é o Cristo, o Filho de Deus, e para que, crendo, tenham vida em seu nome."
+      </p>
+      <div style="font-size:10px;color:{GOLD};font-family:Arial,sans-serif;letter-spacing:1px;">João 20:31</div>
+      <div style="width:60px;height:1px;background:{GOLD};margin:24px auto;opacity:0.5;"></div>
+      <div class="next-chapter-badge">Em Breve</div>
+      <div class="next-chapter-title">Capítulo 2</div>
+      <div class="next-chapter-subtitle">As Bodas de Caná — O Primeiro Milagre</div>
     </div>
   </div>
 </div>'''
 
-# ─────────────────────── INPUT PANEL (Novo Capítulo) ────────────────────────
+# ─── JAVASCRIPT ──────────────────────────────────────────────────────────────
 
-def make_input_panel():
-    return '''<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
-<div class="input-panel" id="input-panel">
-  <div class="panel-header">
-    <h3>➕ Novo Documento</h3>
-    <button class="panel-close" onclick="closePanel()">✕</button>
-  </div>
-  <div class="panel-tabs">
-    <button class="panel-tab active" onclick="switchTab(this,'tab-text')">✏ Inserir Texto</button>
-    <button class="panel-tab" onclick="switchTab(this,'tab-pdf')">📄 Ler PDF</button>
-  </div>
-  <div class="panel-body">
-
-    <!-- TAB: Texto -->
-    <div class="panel-section active" id="tab-text">
-      <div class="panel-label">Título do capítulo</div>
-      <input type="text" id="new-title" placeholder="Ex: Capítulo 2 — O Primeiro Milagre"
-        style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:Arial">
-      <div class="panel-label">Referência bíblica</div>
-      <input type="text" id="new-ref" placeholder="Ex: João 2:1-25"
-        style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:Arial;margin-bottom:4px">
-      <div class="panel-divider"></div>
-      <div class="panel-label">Conteúdo do capítulo</div>
-      <div class="panel-hint">Cole o texto do capítulo abaixo. Você pode incluir versículos, comentários, aplicações, etc.</div>
-      <textarea class="panel-textarea" id="new-content" placeholder="Cole o conteúdo aqui...&#10;&#10;Dica: Separe seções com linhas em branco."></textarea>
-      <button class="panel-btn" onclick="processText()">Processar e Visualizar</button>
-      <button class="panel-btn secondary" onclick="downloadTemplate()">Baixar Template JSON</button>
-      <div id="text-preview" style="display:none;margin-top:12px;padding:12px;background:#f8f8f8;border-radius:6px;font-size:11.5px;color:#333;line-height:1.6;max-height:200px;overflow-y:auto"></div>
-    </div>
-
-    <!-- TAB: PDF -->
-    <div class="panel-section" id="tab-pdf">
-      <div class="panel-hint" style="margin-bottom:12px">Selecione um arquivo PDF para extrair o texto automaticamente. Para PDFs complexos (escaneados, com proteção), use a aba "Inserir Texto".</div>
-      <div class="pdf-drop" id="pdf-drop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
-        <input type="file" id="pdf-file" accept=".pdf" onchange="handlePDFFile(this.files[0])">
-        <div class="pdf-drop-icon">📄</div>
-        <div class="pdf-drop-text">Clique para selecionar ou arraste o PDF</div>
-        <div class="pdf-drop-sub">Apenas arquivos .pdf</div>
-      </div>
-      <div id="pdf-status" style="display:none" class="pdf-status"></div>
-      <div id="pdf-extracted-section" style="display:none">
-        <div class="panel-label">Texto extraído</div>
-        <textarea class="panel-textarea" id="pdf-text" style="min-height:160px" placeholder="Texto extraído do PDF..."></textarea>
-        <button class="panel-btn" onclick="processPDFText()">Usar este texto</button>
-        <button class="panel-btn secondary" onclick="copyPDFText()">Copiar texto</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<button class="fab" id="fab" onclick="openPanel()" title="Novo Documento">+</button>
-<div class="fab-tooltip">Novo documento</div>'''
-
-# ─────────────────────────────── JAVASCRIPT ─────────────────────────────────
-
-def make_js():
-    return '''<script>
-// ── Book navigation ──────────────────────────────────────────────────────────
-const TOTAL = 14;
-let current = 0;
-const spreads = Array.from(document.querySelectorAll('.spread'));
-const progressBar = document.getElementById('progress-bar');
-
-function goSpread(n) {
-  if (n < 0 || n >= TOTAL) return;
-  const prev = document.getElementById('spread-' + current);
-  if (prev) {
-    prev.classList.remove('active');
-    prev.classList.add(n > current ? 'exit-left' : 'exit-right');
-    setTimeout(() => prev.classList.remove('exit-left', 'exit-right'), 500);
-  }
-  current = n;
-  const next = document.getElementById('spread-' + current);
-  if (next) next.classList.add('active');
-  updateNav();
-  loadDiary();
-}
-
-function updateNav() {
-  document.getElementById('nav-current').textContent = current + 1;
-  document.getElementById('btn-prev').disabled = current === 0;
-  document.getElementById('btn-next').disabled = current === TOTAL - 1;
-  const pct = (current / (TOTAL - 1)) * 100;
-  progressBar.style.width = pct + '%';
-  document.querySelectorAll('.nav-dot').forEach((d,i) => {
-    d.classList.toggle('active', i === current);
-  });
-}
-
-document.getElementById('btn-prev').addEventListener('click', () => goSpread(current - 1));
-document.getElementById('btn-next').addEventListener('click', () => goSpread(current + 1));
-
-// Keyboard
-document.addEventListener('keydown', e => {
-  if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
-  if (e.key === 'ArrowRight' || e.key === 'PageDown') goSpread(current + 1);
-  if (e.key === 'ArrowLeft' || e.key === 'PageUp') goSpread(current - 1);
-  if (e.key === 'Home') goSpread(0);
-  if (e.key === 'End') goSpread(TOTAL - 1);
-});
-
-// Touch swipe
-let tx = 0;
-document.querySelector('.book-wrap').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
-document.querySelector('.book-wrap').addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - tx;
-  if (Math.abs(dx) > 50) goSpread(current + (dx < 0 ? 1 : -1));
-}, {passive:true});
-
-// ── Diary (localStorage) ──────────────────────────────────────────────────────
-let diaryTimer = null;
-function saveDiary(el) {
-  clearTimeout(diaryTimer);
-  diaryTimer = setTimeout(() => {
-    localStorage.setItem(el.dataset.key, el.value);
-  }, 400);
-}
-function loadDiary() {
-  document.querySelectorAll('[data-key]').forEach(el => {
-    const saved = localStorage.getItem(el.dataset.key);
-    if (saved) el.value = saved;
-  });
-}
-loadDiary();
-
-// ── Memory exercise ───────────────────────────────────────────────────────────
-function checkMemory() {
-  const inputs = document.querySelectorAll('.mem-blank');
-  let correct = 0;
-  inputs.forEach(inp => {
-    const ans = inp.dataset.answer.toLowerCase().replace(/[,\.]/g,'');
-    const val = inp.value.trim().toLowerCase().replace(/[,\.]/g,'');
-    inp.classList.remove('correct','wrong');
-    if (val === '' ) return;
-    if (val === ans) { inp.classList.add('correct'); correct++; }
-    else inp.classList.add('wrong');
-  });
-  const result = document.getElementById('mem-result');
-  if (correct === inputs.length) {
-    result.style.background = '#f0fdf4'; result.style.color = '#15803d';
-    result.textContent = '🎉 Parabéns! Você completou o versículo corretamente!';
-  } else {
-    result.style.background = '#fff7ed'; result.style.color = '#c2410c';
-    result.textContent = `${correct}/${inputs.length} palavras corretas. Continue tentando!`;
-  }
-}
-function revealMemory() {
-  document.querySelectorAll('.mem-blank').forEach(inp => {
-    inp.value = inp.dataset.answer;
-    inp.classList.remove('correct','wrong');
-    inp.classList.add('correct');
-  });
-  const result = document.getElementById('mem-result');
-  result.style.background = '#f0f9ff'; result.style.color = '#0369a1';
-  result.textContent = 'Respostas reveladas. Tente memorizar e reinicie para praticar!';
-}
-function resetMemory() {
-  document.querySelectorAll('.mem-blank').forEach(inp => {
-    inp.value = ''; inp.classList.remove('correct','wrong');
-  });
-  const result = document.getElementById('mem-result');
-  result.textContent = ''; result.style.background = 'transparent';
-}
-
-// ── Input Panel ───────────────────────────────────────────────────────────────
-function openPanel() {
-  document.getElementById('input-panel').classList.add('open');
-  document.getElementById('panel-overlay').classList.add('open');
-}
-function closePanel() {
-  document.getElementById('input-panel').classList.remove('open');
-  document.getElementById('panel-overlay').classList.remove('open');
-}
-function switchTab(btn, tabId) {
-  document.querySelectorAll('.panel-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(tabId).classList.add('active');
-}
-
-// ── Text input processing ─────────────────────────────────────────────────────
-function processText() {
-  const title = document.getElementById('new-title').value.trim();
-  const ref = document.getElementById('new-ref').value.trim();
-  const content = document.getElementById('new-content').value.trim();
-  if (!content) { alert('Cole o conteúdo do capítulo antes de continuar.'); return; }
-  const preview = document.getElementById('text-preview');
-  const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
-  let html = '';
-  if (title) html += `<strong>${title}</strong><br>`;
-  if (ref) html += `<em>${ref}</em><hr style="margin:8px 0">`;
-  paragraphs.slice(0, 5).forEach(p => { html += `<p style="margin-bottom:8px">${p.replace(/\n/g,'<br>')}</p>`; });
-  if (paragraphs.length > 5) html += `<p style="color:#888">[... ${paragraphs.length - 5} parágrafos adicionais]</p>`;
-  preview.innerHTML = html;
-  preview.style.display = 'block';
-}
-
-function downloadTemplate() {
-  const template = {
-    numero: 2,
-    titulo: "Título do Capítulo",
-    subtitulo: "João X:Y-Z",
-    serie: "Estudo do Evangelho de João",
-    tema_geral: "Tema geral",
-    versiculo_chave: { texto: "...", ref: "João X:Y" },
-    panorama: { texto: "...", temas: ["Tema 1","Tema 2"], estrutura: [{ ref:"X:1-10", titulo:"Seção 1" }] },
-    personagens: [{ nome:"Nome", titulo:"Título", descricao:"...", versiculo:"...", cor:"#1a2744", inicial:"N" }],
-    contexto: { titulo:"Contexto", periodo:"...", texto:"...", marcos:[{ ano:"...", evento:"..." }], local:"..." },
-    blocos: [{ num:1, ref:"João X:1-5", titulo:"...", cor:"#1a2744", icone:"✦", texto:"...", aprendizado_titulo:"...", aprendizado:"..." }],
-    aprendemos_sobre_jesus: ["Ponto 1","Ponto 2"],
-    sintese: { titulo:"Síntese", temas:[{ titulo:"...", texto:"...", icone:"✦", cor:"#1a2744" }] },
-    curiosidades: [{ titulo:"...", texto:"...", icone:"💡" }],
-    aplicacao: { titulo:"...", pontos:[{ num:"1", titulo:"...", texto:"...", icone:"✝" }] },
-    desafio: { titulo:"...", descricao:"...", tarefas:["Tarefa 1"] },
-    reflexao: { titulo:"...", perguntas:["Pergunta 1?"] },
-    memoria: { texto:"...", ref:"João X:Y", blanks_idx:[2,5] },
-    oracao: { titulo:"...", texto:"..." }
-  };
-  const blob = new Blob([JSON.stringify(template, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'template_capitulo.json'; a.click();
-}
-
-// ── PDF extraction ────────────────────────────────────────────────────────────
-function handlePDFFile(file) {
-  if (!file) return;
-  document.getElementById('pdf-drop').classList.remove('drag');
-  const status = document.getElementById('pdf-status');
-  status.style.display = 'block';
-  status.className = 'pdf-status loading';
-  status.textContent = '⏳ Lendo o arquivo PDF...';
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const text = extractPDFText(e.target.result);
-      document.getElementById('pdf-text').value = text;
-      document.getElementById('pdf-extracted-section').style.display = 'block';
-      status.className = 'pdf-status success';
-      status.textContent = '✓ Texto extraído com sucesso! Revise e use conforme necessário.';
-    } catch(err) {
-      status.className = 'pdf-status error';
-      status.textContent = '✗ Não foi possível extrair texto automaticamente. Por favor, copie e cole o conteúdo manualmente na aba "Inserir Texto".';
-    }
-  };
-  reader.onerror = function() {
-    status.className = 'pdf-status error';
-    status.textContent = '✗ Erro ao ler o arquivo. Verifique se é um PDF válido.';
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function extractPDFText(buffer) {
-  const bytes = new Uint8Array(buffer);
-  // Decode as Latin-1 to preserve byte values
-  let raw = '';
-  for (let i = 0; i < Math.min(bytes.length, 2000000); i++) {
-    raw += String.fromCharCode(bytes[i]);
+JS = """
+// ── BookViewer ────────────────────────────────────────────────────────────────
+class BookViewer {
+  constructor() {
+    this.spreads = Array.from(document.querySelectorAll('.spread'));
+    this.total   = this.spreads.length;
+    this.current = 0;
+    this.busy    = false;
+    this.init();
   }
 
-  const texts = [];
-  // Method 1: BT...ET blocks with Tj/TJ operators
-  const btEt = raw.matchAll(/BT([\s\S]{0,2000}?)ET/g);
-  for (const m of btEt) {
-    const block = m[1];
-    // Tj: (text)Tj
-    for (const tj of block.matchAll(/\(([^)]{0,200})\)\s*Tj/g)) {
-      const t = cleanPDFString(tj[1]);
-      if (t.trim()) texts.push(t);
-    }
-    // TJ: [(text)-num(text)]TJ
-    for (const tj of block.matchAll(/\[([\s\S]{0,500}?)\]\s*TJ/g)) {
-      for (const p of tj[1].matchAll(/\(([^)]{0,200})\)/g)) {
-        const t = cleanPDFString(p[1]);
-        if (t.trim()) texts.push(t);
+  init() {
+    document.getElementById('btn-prev').addEventListener('click', () => this.prev());
+    document.getElementById('btn-next').addEventListener('click', () => this.next());
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') this.next();
+      if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   this.prev();
+    });
+    this.setupSwipe();
+    this.updateUI();
+    diary.loadAll();
+  }
+
+  async go(dir) {
+    if (this.busy) return;
+    const next = this.current + dir;
+    if (next < 0 || next >= this.total) return;
+    this.busy = true;
+
+    const cur  = this.spreads[this.current];
+    const nxt  = this.spreads[next];
+    const outC = dir > 0 ? 'anim-out-left'  : 'anim-out-right';
+    const inC  = dir > 0 ? 'anim-in-right'  : 'anim-in-left';
+
+    cur.classList.add(outC);
+    nxt.style.opacity = '0';
+    nxt.classList.remove(...nxt.classList);
+    nxt.classList.add('spread', 'active', inC);
+
+    setTimeout(() => {
+      cur.classList.remove('active', outC);
+      nxt.classList.remove(inC);
+      this.current = next;
+      this.busy = false;
+      this.updateUI();
+    }, 680);
+  }
+
+  next() { this.go(1); }
+  prev() { this.go(-1); }
+  goTo(i) { const d = i - this.current; if (d) this.go(d > 0 ? 1 : -1); setTimeout(() => { if (this.current !== i) this.goTo(i); }, 700); }
+
+  updateUI() {
+    document.getElementById('btn-prev').disabled = this.current === 0;
+    document.getElementById('btn-next').disabled = this.current === this.total - 1;
+    document.getElementById('spread-current').textContent = this.current + 1;
+    document.getElementById('spread-total').textContent   = this.total;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === this.current));
+  }
+
+  setupSwipe() {
+    let sx = null;
+    const el = document.querySelector('.book');
+    el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+    el.addEventListener('touchend',   e => {
+      if (sx === null) return;
+      const dx = sx - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 45) dx > 0 ? this.next() : this.prev();
+      sx = null;
+    });
+  }
+}
+
+// ── Flip Cards ────────────────────────────────────────────────────────────────
+function flipCard(btn) {
+  const inner = btn.closest('.flip-inner');
+  inner.classList.toggle('flipped');
+}
+
+// ── Reflection Diary ─────────────────────────────────────────────────────────
+const diary = {
+  KEY: 'joao_cap1_reflexao',
+  timers: {},
+
+  save(i, val) {
+    clearTimeout(this.timers[i]);
+    this.timers[i] = setTimeout(() => {
+      const data = this.load();
+      data[i] = val;
+      localStorage.setItem(this.KEY, JSON.stringify(data));
+      const badge = document.getElementById('saved-' + i);
+      if (badge) { badge.classList.add('saved'); setTimeout(() => badge.classList.remove('saved'), 1500); }
+    }, 500);
+  },
+
+  load() {
+    try { return JSON.parse(localStorage.getItem(this.KEY) || '{}'); } catch { return {}; }
+  },
+
+  loadAll() {
+    const data = this.load();
+    Object.keys(data).forEach(i => {
+      const el = document.getElementById('q' + i);
+      if (el) el.value = data[i];
+    });
+  },
+
+  exportTxt() {
+    const data = this.load();
+    const questions = document.querySelectorAll('.q-text');
+    let txt = 'Diário de Reflexão — João Capítulo 1\\n';
+    txt += '='.repeat(50) + '\\n\\n';
+    questions.forEach((q, i) => {
+      txt += `${i + 1}. ${q.textContent}\\n`;
+      txt += (data[i] || '(sem resposta)') + '\\n\\n';
+    });
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'diario_reflexao_joao_cap1.txt';
+    a.click();
+  }
+};
+
+// ── Memory Exercise ───────────────────────────────────────────────────────────
+const memory = {
+  check() {
+    const inputs = document.querySelectorAll('.memory-input');
+    let correct = 0;
+    inputs.forEach(inp => {
+      const ans = inp.value.trim().toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+      const exp = inp.dataset.answer.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+      inp.classList.remove('correct', 'wrong');
+      if (ans === exp) { inp.classList.add('correct'); correct++; }
+      else if (ans) { inp.classList.add('wrong'); }
+    });
+    const fb = document.getElementById('memory-feedback');
+    if (fb) {
+      if (correct === inputs.length) {
+        fb.style.color = '#2d6a4f';
+        fb.textContent = '✓ Perfeito! Todas as palavras corretas!';
+      } else {
+        fb.style.color = '#dc2626';
+        fb.textContent = `${correct}/${inputs.length} corretas. Continue tentando!`;
       }
     }
+  },
+
+  reveal() {
+    document.querySelectorAll('.memory-input').forEach(inp => {
+      inp.value = inp.dataset.answer;
+      inp.classList.add('correct');
+    });
+    const fb = document.getElementById('memory-feedback');
+    if (fb) { fb.style.color = '#8b8680'; fb.textContent = 'Versículo revelado. Tente memorizar!'; }
+  },
+
+  reset() {
+    document.querySelectorAll('.memory-input').forEach(inp => {
+      inp.value = '';
+      inp.classList.remove('correct', 'wrong');
+    });
+    const fb = document.getElementById('memory-feedback');
+    if (fb) fb.textContent = '';
   }
+};
 
-  if (texts.length > 0) {
-    return texts.join(' ')
-      .replace(/\\n/g,'\\n')
-      .replace(/  +/g,' ')
-      .trim();
+// ── Chapter Input Panel ───────────────────────────────────────────────────────
+const inputPanel = {
+  panel:    null,
+  backdrop: null,
+
+  init() {
+    this.panel    = document.getElementById('input-panel');
+    this.backdrop = document.getElementById('panel-backdrop');
+    this.backdrop.addEventListener('click', () => this.close());
+
+    // Tab switching
+    document.querySelectorAll('.panel-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel-tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // PDF upload
+    const pdfInput = document.getElementById('pdf-file');
+    if (pdfInput) pdfInput.addEventListener('change', e => this.handlePDF(e));
+
+    // Drag & drop on PDF zone
+    const zone = document.querySelector('.pdf-drop-zone');
+    if (zone) {
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = '#c9a84c'; });
+      zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.style.borderColor = '';
+        const file = e.dataTransfer.files[0];
+        if (file && file.type === 'application/pdf') this.processPDFFile(file);
+      });
+    }
+  },
+
+  toggle() {
+    this.panel.classList.contains('open') ? this.close() : this.open();
+  },
+
+  open() {
+    this.panel.classList.add('open');
+    this.backdrop.classList.add('open');
+  },
+
+  close() {
+    this.panel.classList.remove('open');
+    this.backdrop.classList.remove('open');
+  },
+
+  handlePDF(e) {
+    const file = e.target.files[0];
+    if (file) this.processPDFFile(file);
+  },
+
+  processPDFFile(file) {
+    const status = document.getElementById('pdf-status');
+    status.textContent = 'Lendo arquivo: ' + file.name + '...';
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = this.extractTextFromPDF(e.target.result);
+      const ta = document.getElementById('pdf-extracted');
+      if (ta) ta.value = text;
+      status.textContent = text.length > 100
+        ? `✓ Texto extraído (${text.length} caracteres). Revise e use como base.`
+        : '⚠ Extração limitada. Para PDFs protegidos ou digitalizados, copie e cole o texto manualmente na aba "Inserir Texto".';
+    };
+    reader.readAsArrayBuffer(file);
+  },
+
+  extractTextFromPDF(buffer) {
+    try {
+      const bytes   = new Uint8Array(buffer);
+      const latin1  = new TextDecoder('latin1').decode(bytes);
+      const utf8    = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+      let text = '';
+      // Extract text between stream markers using simple PDF parsing
+      const streamRe = /stream\\r?\\n([\\s\\S]*?)\\r?\\nendstream/g;
+      let m;
+      while ((m = streamRe.exec(latin1)) !== null) {
+        const chunk = m[1];
+        // Look for Tj and TJ operators (PDF text operators)
+        const tjRe = /\\(([^)]{0,200})\\)\\s*Tj/g;
+        let tm;
+        while ((tm = tjRe.exec(chunk)) !== null) text += tm[1].replace(/\\\\n/g,' ') + ' ';
+        const tjRe2 = /\\[([^\\]]{0,500})\\]\\s*TJ/g;
+        while ((tm = tjRe2.exec(chunk)) !== null) {
+          const inner = tm[1];
+          const wRe = /\\(([^)]*)\\)/g;
+          let wm;
+          while ((wm = wRe.exec(inner)) !== null) text += wm[1];
+          text += ' ';
+        }
+      }
+      // Clean up
+      text = text.replace(/[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]/g, ' ').replace(/\\s+/g, ' ').trim();
+      return text || '(Não foi possível extrair texto automaticamente. Use "Inserir Texto" para colar o conteúdo manualmente.)';
+    } catch {
+      return '(Erro na leitura do PDF. Cole o texto manualmente na aba "Inserir Texto".)';
+    }
+  },
+
+  processText() {
+    const text = document.getElementById('chapter-text').value.trim();
+    if (!text) { alert('Cole o texto do capítulo antes de processar.'); return; }
+    const preview = document.getElementById('text-preview');
+    preview.style.display = 'block';
+    preview.innerHTML = `
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px;margin-top:12px;">
+        <div style="font-size:11px;font-weight:bold;color:#166534;margin-bottom:6px;">✓ Texto recebido (${text.length} caracteres)</div>
+        <div style="font-size:10.5px;color:#15803d;line-height:1.5;">${text.substring(0, 400).replace(/</g,'&lt;')}${text.length > 400 ? '...' : ''}</div>
+        <div style="font-size:10px;color:#6b7280;margin-top:8px;">Para gerar um novo capítulo interativo com este conteúdo, exporte como JSON e use o gerador Python.</div>
+      </div>`;
   }
+};
 
-  // Method 2: Look for readable ASCII strings (fallback)
-  let ascii = '';
-  for (let i = 0; i < bytes.length; i++) {
-    const b = bytes[i];
-    if (b >= 32 && b < 127) ascii += String.fromCharCode(b);
-    else if (b === 10 || b === 13) ascii += ' ';
-  }
-  // Filter out PDF syntax noise, keep words
-  const words = ascii.match(/[a-zA-ZÀ-ÿ]{3,}/g) || [];
-  if (words.length > 20) return words.join(' ');
+// ── Init ─────────────────────────────────────────────────────────────────────
+const book = new BookViewer();
+inputPanel.init();
+"""
 
-  throw new Error('No text found');
-}
+# ─── MAIN HTML ASSEMBLER ─────────────────────────────────────────────────────
 
-function cleanPDFString(s) {
-  return s
-    .replace(/\\(n|r)/g,' ')
-    .replace(/\\t/g,' ')
-    .replace(/\\\\/g,'\\')
-    .replace(/\\([0-7]{3})/g, (m,o) => String.fromCharCode(parseInt(o,8)))
-    .replace(/[\\(\\)]/g,'');
-}
+def build_dots(n):
+    return "".join(
+        f'<div class="dot{"" if i > 0 else " active"}" onclick="book.goTo({i})"></div>'
+        for i in range(n)
+    )
 
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('pdf-drop').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type === 'application/pdf') handlePDFFile(file);
-  else alert('Por favor, selecione um arquivo PDF válido.');
-}
-
-function processPDFText() {
-  const text = document.getElementById('pdf-text').value;
-  if (!text) return;
-  document.getElementById('new-content').value = text;
-  switchTab(document.querySelectorAll('.panel-tab')[0], 'tab-text');
-}
-
-function copyPDFText() {
-  const text = document.getElementById('pdf-text').value;
-  navigator.clipboard.writeText(text).then(() => {
-    alert('Texto copiado para a área de transferência!');
-  }).catch(() => {
-    document.getElementById('pdf-text').select();
-    document.execCommand('copy');
-    alert('Texto copiado!');
-  });
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-updateNav();
-</script>'''
-
-# ─────────────────────────────── ASSEMBLER ──────────────────────────────────
-
-def gerar(cap):
-    # Build nav dots
-    dots = "".join(f'<div class="nav-dot{" active" if i==0 else ""}" onclick="goSpread({i})" title="Página {i+1}"></div>' for i in range(14))
-
-    spreads_html = "\n".join([
+def generate_html(cap):
+    spreads = "\n".join([
         spread_cover(cap),
         spread_toc(cap),
         spread_panorama(cap),
         spread_personagens(cap),
-        spread_contexto(cap),
-        spread_blocos_12(cap),
-        spread_bloco3(cap),
-        spread_blocos_45(cap),
+        spread_contexto_mapa(cap),
+        spread_blocos_1_2(cap),
+        spread_bloco_3(cap),
+        spread_blocos_4_5(cap),
         spread_sintese(cap),
         spread_curiosidades(cap),
-        spread_aplicacao(cap),
+        spread_aplicacao_desafio(cap),
         spread_diario(cap),
-        spread_memoria(cap),
-        spread_contracapa(cap),
+        spread_memoria_oracao(cap),
+        spread_back_cover(cap),
     ])
+    n_spreads = 14
 
-    html = f"""<!DOCTYPE html>
+    return f"""<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{esc(cap['titulo'])} — {esc(cap['serie'])}</title>
-<style>{make_css()}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Estudo do Evangelho de João — Capítulo {cap["numero"]}: {cap["titulo"]}</title>
+  <style>{CSS}</style>
 </head>
 <body>
-<div class="progress-bar" id="progress-bar"></div>
 
+<!-- ── Scene ── -->
 <div class="scene">
-  <div class="book-wrap">
-    <div class="spine"></div>
-    {spreads_html}
+  <div class="book" id="book-el">
+    {spreads}
   </div>
 
-  <!-- Navigation -->
-  <div class="nav-bar">
-    <button class="nav-btn" id="btn-prev" disabled>&#8249;</button>
-    <div class="nav-info">
-      <div><span id="nav-current">1</span> / 14</div>
-      <div class="nav-dots">{dots}</div>
-    </div>
-    <button class="nav-btn" id="btn-next">&#8250;</button>
+  <div class="controls">
+    <button class="ctrl-btn" id="btn-prev" disabled>&#8249;</button>
+    <div class="dot-nav">{build_dots(n_spreads)}</div>
+    <div class="spread-indicator"><span id="spread-current">1</span>&thinsp;/&thinsp;<span id="spread-total">{n_spreads}</span></div>
+    <button class="ctrl-btn" id="btn-next">&#8250;</button>
   </div>
 </div>
 
-{make_input_panel()}
-{make_js()}
+<!-- ── Chapter Input Panel ── -->
+<div id="panel-backdrop" class="panel-backdrop"></div>
+
+<div id="input-panel" class="input-panel">
+  <div class="input-panel-header">
+    <h3>Novo Capítulo</h3>
+    <button class="panel-close-btn" onclick="inputPanel.close()">✕</button>
+  </div>
+  <div class="panel-tabs">
+    <button class="panel-tab active" data-tab="text">✏ Inserir Texto</button>
+    <button class="panel-tab" data-tab="pdf">📄 Ler PDF</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-tab-content active" id="tab-text">
+      <label class="panel-label">Cole o conteúdo do capítulo:</label>
+      <textarea class="panel-textarea" id="chapter-text"
+        placeholder="Cole aqui o texto do capítulo (pode ser o texto bíblico, notas de estudo, ou qualquer conteúdo relacionado)..."></textarea>
+      <button class="panel-btn panel-btn-primary" onclick="inputPanel.processText()">Processar Conteúdo</button>
+      <div id="text-preview"></div>
+    </div>
+    <div class="panel-tab-content" id="tab-pdf">
+      <label class="pdf-drop-zone" for="pdf-file">
+        <div class="pdf-drop-icon">📄</div>
+        <div class="pdf-drop-label">Clique ou arraste um arquivo PDF</div>
+        <div class="pdf-drop-sub">Suporte: PDFs com texto selecionável</div>
+        <input type="file" id="pdf-file" accept=".pdf">
+      </label>
+      <div id="pdf-status" class="pdf-status"></div>
+      <label class="panel-label">Texto extraído:</label>
+      <textarea class="panel-textarea" id="pdf-extracted"
+        placeholder="O texto extraído do PDF aparecerá aqui..."></textarea>
+      <button class="panel-btn panel-btn-secondary" onclick="document.getElementById('pdf-file').click()">Escolher outro PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FAB ── -->
+<button class="fab" onclick="inputPanel.toggle()" title="Inserir texto ou ler PDF">+</button>
+<div class="fab-tooltip">Novo Capítulo</div>
+
+<script>{JS}</script>
 </body>
 </html>"""
 
-    with open(OUTPUT, "w", encoding="utf-8") as f:
-        f.write(html)
-    size = os.path.getsize(OUTPUT)
-    print(f"✓ {OUTPUT} gerado — {size//1024} KB")
-    return OUTPUT
+# ─── ENTRY POINT ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    gerar(CAP1)
+    out = os.path.join(os.path.dirname(__file__), "estudo_joao_cap1_livro.html")
+    html = generate_html(CAP1)
+    with open(out, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"✓ Gerado: {out}  ({len(html):,} bytes)")
