@@ -1,0 +1,7 @@
+2026-10-26 10:40:36,766 INFO Auditoria TSE 2026 v1.0.0 — UFs: AC,AL,AM,AP,BA,CE,DF,ES,GO,MA,MG,MS,MT,PA,PB,PE,PI,PR,RJ,RN,RO,RR,RS,SC,SE,SP,TO
+2026-10-26 10:41:38,400 ERROR Falha ao consultar CKAN resultados-2026: HTTPSConnectionPool(host='dadosabertos.tse.jus.br', port=443): Max retries exceeded with url: /api/3/action/package_show?id=resultados-2026 (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))
+2026-10-26 10:42:39,822 ERROR Falha no download de https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip: ProxyError: HTTPSConnectionPool(host='cdn.tse.jus.br', port=443): Max retries exceeded with url: /estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip (Caused by ProxyError('Unable to connect to proxy', OSError('Tunnel connection failed: 403 Forbidden')))
+2026-10-26 10:42:39,825 INFO detalhe: 0 seções no 1º turno
+2026-10-26 10:42:39,826 INFO detalhe: 0 seções no 2º turno
+2026-10-26 10:42:39,830 INFO Status do escopo: NÃO EXECUTADA
+2026-10-26 10:42:40,243 INFO Saídas gravadas em /home/user/Livreto-/auditoria_tse_2026/execucao_2026-10-26
