@@ -4,7 +4,7 @@
 
 ### Aprovação — 2026-11-18
 - **Decisão explícita do usuário:** "Piloto vai entrar em aprovação. Aprovado os demais itens."
-- **Storyboard e timing da Cena 01 (v01):** EM APROVAÇÃO. Não avançar para geração do piloto antes da decisão.
+- **Storyboard e timing da Cena 01 (v01):** APROVADO em 18/11/2026 ("Plano ok"). Liberada a geração externa das tomadas C01-P01 a C01-P06.
 - **Bioma:** APROVADO — floresta amazônica de várzea / mata ciliar.
 - **Estratégia de lip sync bilíngue:** APROVADA — tomadas geradas com boca neutra; lip sync na pós-produção, por idioma.
 - **Roteiros PT/EN v01 e notas de revisão LUA** (cena 06 "caminho por onde veio"; sem tucanos/araras no fundo): APROVADOS.
